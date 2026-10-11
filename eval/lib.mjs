@@ -88,6 +88,9 @@ export function rowKey(r) {
 // conditions recorded, so a prediction can be graded and the conditions can be
 // handed to the model as the query.
 export function isGradeable(r) {
+  // A concentration of 0 is not a treatment. Those rows come from a range in
+  // the source ("0-300 nM") whose first number was taken as the dose.
+  if (parseFloat(r.conc_uM) === 0) return false;
   return ['up', 'down', 'none'].includes((r.direction || '').trim())
     && filled(r, 'conc_uM') && filled(r, 'time_h')
     && filled(r, 'cell') && filled(r, 'drug') && filled(r, 'marker');

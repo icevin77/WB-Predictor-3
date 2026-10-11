@@ -45,6 +45,10 @@ saveJSON(path.join(OUT, 'holdout.json'), holdout.map(r => ({
   drug: r.drug, drug_raw: r.drug_raw,
   marker: r.marker, marker_raw: r.marker_raw,
   conc_uM: r.conc_uM, time_h: r.time_h,
+  // 43% of rows compare something other than drug-versus-untreated — an
+  // overexpression, a pretreatment, an inhibitor. Without this the question
+  // asked and the label recorded are about different experiments.
+  condition: (r.condition && r.condition !== 'nan') ? r.condition : '',
   quality: r.quality,
   truth: r.direction
 })));
