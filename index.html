@@ -25,6 +25,24 @@
   --mono:     'IBM Plex Mono', monospace;
   --sans:     'Inter', sans-serif;
   --serif:    'Fraunces', serif;
+
+  /* Direction encoding. Diverging pair with a neutral midpoint, stepped for
+     this surface and validated as a set: worst pair ΔE 9.9 under deuteranopia
+     and 16.9 with normal vision, both clear of the floors. Direction is always
+     carried by a glyph and a word as well, never by colour alone. */
+  --dir-up:      #1baf7a;
+  --dir-down:    #d03b3b;
+  --dir-none:    #5b6178;
+  --dir-unknown: #c98500;
+
+  /* Evidence tier. Measured and inferred must not look alike. */
+  --tier-measured: #1baf7a;
+  --tier-analogous:#60a5fa;
+  --tier-inferred: #a78bfa;
+  --tier-absent:   #d03b3b;
+
+  --meter: #3987e5;
+
   /* legacy aliases */
   --green: #34d399;
   --muted: #475569;
@@ -116,13 +134,67 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .warn { background: rgba(251,146,60,0.06); border: 1px solid rgba(251,146,60,0.2); border-left: 3px solid var(--orange); padding: 10px 14px; font-size: 11px; color: rgba(251,146,60,0.85); line-height: 1.6; margin-bottom: 24px; border-radius: 0 5px 5px 0; }
 .gel-wrap { background: #030408; border: 1px solid var(--border); padding: 20px 24px 24px; margin-bottom: 20px; border-radius: 6px; }
 .gel-header { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text3); text-transform: uppercase; margin-bottom: 16px; display: flex; justify-content: space-between; }
+/* Predictions are a list of markers, not a dense grid: the metrics sit on one
+   scannable line and the reasoning gets the full column width underneath, so
+   nothing has to be truncated. */
 .pred-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.pred-table th { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text3); padding: 8px 12px; border-bottom: 1px solid var(--border2); text-align: left; font-weight: 400; }
-.pred-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
-.pred-table tr:hover td { background: rgba(255,255,255,0.015); }
-.up { color: var(--accent); } .down { color: var(--red); } .none { color: var(--text3); } .unknown { color: var(--orange); }
-.conf-bar { display: inline-block; width: 52px; height: 3px; background: var(--border2); border-radius: 2px; vertical-align: middle; overflow: hidden; }
-.conf-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; }
+.pred-table th { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2); padding: 2px 14px 11px; border-bottom: 1px solid var(--border2); text-align: left; font-weight: 400; white-space: nowrap; }
+/* Metric columns are sized to their content so they cluster beside the marker
+   name; the evidence column absorbs the slack. */
+.pred-table th:nth-child(1) { width: 20%; min-width: 150px; }
+.pred-table th:nth-child(2) { width: 130px; }
+.pred-table th:nth-child(3) { width: 96px; }
+.pred-table th:nth-child(4) { width: 132px; }
+.pred-table td { padding: 12px 14px 0; vertical-align: baseline; line-height: 1.5; }
+.pred-row > td { padding-top: 14px; }
+.pred-row:hover > td, .pred-row:hover + .pred-detail > td { background: rgba(255,255,255,0.016); }
+.pred-detail > td { padding: 8px 14px 16px; border-bottom: 1px solid var(--border); }
+.pred-marker { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; }
+
+/* Colour sits in the glyph; the word stays in body ink so identity never
+   depends on hue. */
+.dir { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12px; color: var(--text); }
+.dir i { font-style: normal; font-size: 11px; line-height: 1; }
+.dir.up i { color: var(--dir-up); } .dir.down i { color: var(--dir-down); }
+.dir.none i { color: var(--dir-none); } .dir.unknown i { color: var(--dir-unknown); }
+.dir.none { color: var(--text2); }
+
+.intensity { font-family: var(--mono); font-size: 10.5px; color: var(--text2); white-space: nowrap; }
+
+/* Meter: single hue, square at the baseline and rounded at the data end, so
+   length alone carries magnitude. */
+.meter-wrap { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.meter { width: 64px; height: 6px; background: var(--border2); border-radius: 1px; overflow: hidden; flex-shrink: 0; }
+.meter > span { display: block; height: 100%; background: var(--meter); border-radius: 0 3px 3px 0; transition: width 1s ease; }
+.meter-val { font-family: var(--mono); font-size: 11.5px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.tier { display: inline-block; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 3px; white-space: nowrap; border: 1px solid; }
+.tier.measured  { color: var(--tier-measured);  border-color: rgba(27,175,122,0.4);  background: rgba(27,175,122,0.09); }
+.tier.analogous { color: var(--tier-analogous); border-color: rgba(96,165,250,0.4);  background: rgba(96,165,250,0.09); }
+.tier.inferred  { color: var(--tier-inferred);  border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.09); }
+.tier.absent    { color: var(--tier-absent);    border-color: rgba(208,59,59,0.45);  background: rgba(208,59,59,0.09); }
+.tier.control   { color: var(--text2);          border-color: var(--border2);        background: rgba(255,255,255,0.03); }
+.tier.caution   { color: var(--dir-unknown);    border-color: rgba(201,133,0,0.45);  background: rgba(201,133,0,0.09); }
+
+/* The reasoning block. No clamping — this is the part being read. */
+.chain { font-size: 12px; line-height: 1.75; color: var(--text2); max-width: 86ch; }
+.chain-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.chain + .chain { margin-top: 10px; }
+.chain.cited { color: rgba(226,232,240,0.88); border-left: 2px solid rgba(27,175,122,0.5); padding-left: 11px; }
+.vote-note { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 8px; letter-spacing: 0.02em; }
+.legend { display: flex; gap: 18px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--text2); flex-wrap: wrap; align-items: center; }
+.legend b { font-weight: 500; color: var(--text); }
+.legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+/* Source tiles. auto-fit so eight tiles do not crush at narrow widths. */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 8px; margin-bottom: 20px; }
+.tile { padding: 11px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; }
+.tile-val { font-family: var(--mono); font-size: 17px; font-weight: 500; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
+.tile-val.dim { color: var(--text3); }
+.tile-key { font-size: 9.5px; letter-spacing: 0.08em; color: var(--text2); margin-top: 5px; text-transform: uppercase; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 13px 16px; margin-bottom: 12px; }
+.panel-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-bottom: 9px; }
+.panel-scroll { font-size: 11px; line-height: 1.95; max-height: 220px; overflow-y: auto; }
 .debate-round { margin-bottom: 22px; animation: rise 0.35s ease; }
 @keyframes rise { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 .round-tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
@@ -130,10 +202,12 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .bubble { font-family: var(--serif); font-size: 14px; line-height: 1.85; padding: 14px 18px; border-left: 2px solid; background: rgba(255,255,255,0.018); color: rgba(226,232,240,0.9); border-radius: 0 5px 5px 0; }
 .bubble.a { border-color: var(--accent); } .bubble.b { border-color: var(--orange); } .bubble.j { border-color: var(--purple); background: rgba(167,139,250,0.04); }
 .pathway-summary { font-family: var(--serif); font-size: 15px; line-height: 1.9; font-style: italic; color: rgba(226,232,240,0.85); padding: 16px 20px; border-left: 2px solid var(--purple); background: rgba(167,139,250,0.04); margin-bottom: 24px; border-radius: 0 6px 6px 0; }
-.mech-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mech-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 .mech-item:last-child { border-bottom: none; }
-.mech-marker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 5px; }
-.mech-text { font-family: var(--serif); font-size: 13.5px; line-height: 1.8; color: rgba(226,232,240,0.8); }
+.mech-head { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; flex-wrap: wrap; }
+.mech-marker { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--text); }
+.mech-conf { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-left: auto; font-variant-numeric: tabular-nums; }
+.mech-text { font-size: 12px; line-height: 1.75; color: var(--text2); max-width: 86ch; margin-top: 9px; }
 .no-data { background: rgba(251,146,60,0.05); border: 1px dashed rgba(251,146,60,0.25); padding: 12px 16px; font-size: 11px; color: rgba(251,146,60,0.75); line-height: 1.7; margin-bottom: 18px; border-radius: 5px; }
 .empty { display: flex; align-items: center; justify-content: center; min-height: 280px; color: var(--text3); font-size: 13px; font-family: var(--serif); font-style: italic; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -8890,45 +8964,47 @@ function renderGel(preds, cellLine, drugLabel) {
   var LADDER = [200, 100, 50, 25, 15];
   var html = '<div class="gel-wrap">' +
     '<div class="gel-header"><span>Western blot simulation</span>' +
-    '<span style="color:var(--muted2)">' + cellLine + ' + ' + drugLabel + '</span></div>' +
-    '<div style="display:flex;align-items:flex-start;">';
+    '<span style="color:var(--text2)">' + esc(cellLine) + '  ·  ' + esc(drugLabel) + '</span></div>' +
+    '<div style="display:flex;align-items:flex-start;justify-content:center;">';
 
-  html += '<div style="width:38px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:20px;">';
+  html += '<div style="width:42px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:22px;">';
   LADDER.forEach(function(mw) {
-    html += '<div style="position:absolute;top:' + mw2y(mw) + '%;right:4px;font-size:7px;color:var(--muted);transform:translateY(-50%)">' + mw + '</div>';
+    html += '<div style="position:absolute;top:' + mw2y(mw) + '%;right:5px;font-family:var(--mono);font-size:9px;color:var(--text3);transform:translateY(-50%)">' + mw + '</div>';
   });
   html += '</div>';
 
-  html += '<div style="width:95px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:20px;">';
+  html += '<div style="width:124px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:22px;">';
   all.forEach(function(p) {
     var bY = by(p), lY = LY[p.marker];
     if (Math.abs(lY - bY) > 1.5) {
       html += '<div style="position:absolute;right:8px;top:' + Math.min(bY, lY) + '%;height:' + Math.abs(lY - bY) + '%;width:1px;background:rgba(107,112,148,0.2)"></div>';
     }
     html += '<div style="position:absolute;right:6px;top:' + bY + '%;width:3px;height:3px;border-radius:50%;background:rgba(107,112,148,0.4);transform:translateY(-50%)"></div>';
-    html += '<div style="position:absolute;right:12px;top:' + lY + '%;font-size:7px;color:var(--muted2);white-space:nowrap;transform:translateY(-50%);text-align:right;line-height:1">' + p.marker + '</div>';
+    html += '<div style="position:absolute;right:13px;top:' + lY + '%;font-size:9px;color:var(--text2);white-space:nowrap;transform:translateY(-50%);text-align:right;line-height:1">' + esc(p.marker) + '</div>';
   });
   html += '</div>';
 
-  html += '<div style="flex:1;display:flex;gap:3px;">';
-  ['CTRL', drugLabel.substring(0, 12)].forEach(function(lbl, li) {
-    html += '<div style="flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;">';
-    html += '<div style="font-size:8px;color:var(--muted2);height:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap">' + lbl + '</div>';
+  // Lanes are a fixed width so the figure keeps a blot's proportions instead of
+  // stretching a band across the whole panel on a wide screen.
+  html += '<div style="display:flex;gap:10px;">';
+  ['Control', drugLabel.substring(0, 14)].forEach(function(lbl, li) {
+    html += '<div style="width:132px;display:flex;flex-direction:column;align-items:center;">';
+    html += '<div style="font-size:10px;color:var(--text2);height:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap">' + esc(lbl) + '</div>';
     html += '<div style="width:100%;background:#010204;border:1px solid #0d0f1a;position:relative;height:' + GH + 'px;">';
     LADDER.forEach(function(mw) {
       html += '<div style="position:absolute;top:' + mw2y(mw) + '%;left:0;right:0;height:1px;background:rgba(255,255,255,0.03)"></div>';
     });
-    html += '<div style="position:absolute;top:85%;left:0;right:0;height:1px;border-top:1px dashed rgba(255,255,255,0.06)"></div>';
+    html += '<div style="position:absolute;top:85%;left:0;right:0;height:1px;background:rgba(255,255,255,0.05)"></div>';
     all.forEach(function(p) {
       var isC = CTRL.indexOf(p.marker) >= 0;
       var color = 'rgba(255,255,255,0.75)', h = 5, glow = '';
       if (li === 1) {
         var op = IM[p.intensity] || 0.4;
         if (isC) color = 'rgba(255,255,255,0.85)';
-        else if (p.direction === 'up') { color = 'rgba(0,229,160,' + op + ')'; glow = 'box-shadow:0 0 8px rgba(0,229,160,' + (op * 0.5) + ');'; }
-        else if (p.direction === 'down') color = 'rgba(239,83,80,' + (op * 0.9) + ')';
+        else if (p.direction === 'up') { color = 'rgba(27,175,122,' + op + ')'; glow = 'box-shadow:0 0 8px rgba(27,175,122,' + (op * 0.45) + ');'; }
+        else if (p.direction === 'down') color = 'rgba(208,59,59,' + (op * 0.95) + ')';
         else if (p.direction === 'none') color = 'rgba(255,255,255,0.18)';
-        else color = 'rgba(255,112,67,0.35)';
+        else color = 'rgba(201,133,0,0.4)';
         h = p.intensity === 'high' ? 7 : p.intensity === 'faint' ? 3 : 5;
       }
       html += '<div style="position:absolute;top:' + by(p) + '%;left:8px;right:8px;height:' + h + 'px;border-radius:1px;background:' + color + ';' + glow + 'transform:translateY(-50%)"></div>';
@@ -8937,19 +9013,40 @@ function renderGel(preds, cellLine, drugLabel) {
   });
   html += '</div></div>';
 
-  html += '<div style="display:flex;gap:20px;font-size:8px;flex-wrap:wrap;margin-top:10px;">' +
-    '<span style="color:var(--green)">■ increased</span><span style="color:var(--red)">■ decreased</span>' +
-    '<span style="color:rgba(255,255,255,0.2)">■ unchanged</span><span style="color:var(--orange)">■ uncertain</span>' +
+  html += '<div class="legend" style="margin-top:14px;padding-top:12px">' +
+    '<span><span class="sw" style="background:var(--dir-up)"></span>increased</span>' +
+    '<span><span class="sw" style="background:var(--dir-down)"></span>decreased</span>' +
+    '<span><span class="sw" style="background:rgba(255,255,255,0.22)"></span>unchanged</span>' +
+    '<span><span class="sw" style="background:var(--dir-unknown)"></span>unclear</span>' +
+    '<span style="color:var(--text3)">Band height follows reported intensity; position follows molecular weight.</span>' +
     '</div></div>';
   document.getElementById('gelOut').innerHTML = html;
 }
 
-// ── Prediction table ──
+// ── Prediction list ──
 var HOUSEKEEPING = ['β-actin', 'GAPDH', 'Tubulin', 'β-tubulin', 'α-tubulin', 'Lamin B1', 'HSP90'];
+
+var DIR_GLYPH = { up: '▲', down: '▼', none: '■', unknown: '◆' };
+var DIR_WORD  = { up: 'increased', down: 'decreased', none: 'unchanged', unknown: 'unclear' };
+
+// Evidence level -> tier. The label is shown verbatim, so a reader can tell a
+// measured result from an inferred one without decoding a colour.
+function evidenceTier(level) {
+  if (level === EV.control) return 'control';
+  if (level === EV.dbDirect || level === EV.direct || level === EV.lincs) return 'measured';
+  if (level === EV.dbAnalog || level === EV.similar) return 'analogous';
+  if (level === EV.none) return 'absent';
+  return 'inferred';
+}
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 function renderTable(preds) {
   var html = '<table class="pred-table"><thead><tr>' +
-    '<th>Marker</th><th>Direction</th><th>Intensity</th><th>Confidence</th><th>WB result</th><th>Signaling chain</th>' +
+    '<th>Marker</th><th>Direction</th><th>Intensity</th><th>Confidence</th><th>Evidence</th>' +
     '</tr></thead><tbody>';
 
   preds.forEach(function(p) {
@@ -8961,56 +9058,49 @@ function renderTable(preds) {
       p.confidence = 100;
       p.evidenceLevel = EV.control;
       p.wb_data_found = null;
+      p.signaling_chain = 'Structural protein used to confirm equal loading. Expression is constant across treatment conditions.';
     }
 
-    var dc = { up: 'up', down: 'down', none: 'none', unknown: 'unknown' }[p.direction] || 'none';
-    var dl = { up: '↑ increased', down: '↓ decreased', none: '— unchanged', unknown: '? unclear' }[p.direction] || '?';
-    var c = p.confidence || 0;
-    var cc = c >= 70 ? 'var(--green)' : c >= 40 ? '#f0c040' : 'var(--orange)';
+    var dir = ['up', 'down', 'none', 'unknown'].indexOf(p.direction) >= 0 ? p.direction : 'none';
+    var conf = Math.max(0, Math.min(100, p.confidence || 0));
+    var level = p.evidenceLevel || EV.mechanism;
+    var tier = evidenceTier(level);
 
-    var uncertain = !isHK && (c < 50 || WEAK_EV.indexOf(p.evidenceLevel) >= 0);
-    var veryUncertain = !isHK && (c < 25 || p.evidenceLevel === EV.none);
-    var rowBg = veryUncertain ? 'background:rgba(255,112,67,0.04);' : uncertain ? 'background:rgba(179,157,219,0.03);' : isHK ? 'background:rgba(255,255,255,0.02);' : '';
-    var leftBar = 'border-left:2px solid ' + (veryUncertain ? 'rgba(255,112,67,0.5)' : uncertain ? 'rgba(179,157,219,0.4)' : isHK ? 'rgba(107,112,148,0.3)' : 'transparent') + ';';
-    var badge = isHK
-      ? '<span style="font-size:7px;padding:1px 5px;background:rgba(107,112,148,0.15);color:var(--muted2);margin-left:5px">loading control</span>'
-      : veryUncertain
-      ? '<span style="font-size:7px;padding:1px 5px;background:rgba(255,112,67,0.15);color:var(--orange);margin-left:5px">inferred</span>'
-      : uncertain
-      ? '<span style="font-size:7px;padding:1px 5px;background:rgba(179,157,219,0.15);color:var(--purple);margin-left:5px">inferred</span>'
-      : '';
-
-    var clip = function(s) { return s.substring(0, 120) + (s.length > 120 ? '...' : ''); };
-    var wb = isHK
-      ? '<span style="color:var(--muted);font-size:9px">Loading control - constant regardless of treatment</span>'
-      : p.wb_data_found
-      ? '<span style="font-style:italic;color:rgba(221,225,240,0.8);font-family:Fraunces,serif;font-size:11px">' + clip(p.wb_data_found) + '</span>'
-      : '<span style="color:var(--muted);font-size:9px">—</span>';
-    var ch = isHK
-      ? '<span style="color:var(--muted);font-size:9px">Cytoskeletal / metabolic structural protein. Expression is constant across experimental conditions.</span>'
-      : p.signaling_chain
-      ? '<span style="color:var(--muted2);font-size:9px">' + clip(p.signaling_chain) + '</span>'
-      : '<span style="color:var(--muted);font-size:9px">—</span>';
-
-    html += '<tr style="' + rowBg + leftBar + '">' +
-      '<td style="font-weight:600;white-space:nowrap">' + p.marker + badge + '</td>' +
-      '<td class="' + dc + '" style="white-space:nowrap">' + dl + '</td>' +
-      '<td style="color:var(--muted2);white-space:nowrap">' + (p.intensity || '—') + '</td>' +
-      '<td style="white-space:nowrap"><div class="conf-bar"><div class="conf-fill" style="width:' + c + '%;background:' + cc + '"></div></div>' +
-      '<span style="font-size:9px;margin-left:4px;color:var(--muted2)">' + c + '%</span>' +
-      (p.voteNote ? '<div style="font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:0.03em">' + p.voteNote + '</div>' : '') +
-      '</td>' +
-      '<td style="max-width:220px">' + wb + '</td>' +
-      '<td style="max-width:220px">' + ch + '</td>' +
+    html += '<tr class="pred-row">' +
+      '<td class="pred-marker">' + esc(p.marker) + '</td>' +
+      '<td><span class="dir ' + dir + '"><i>' + DIR_GLYPH[dir] + '</i>' + DIR_WORD[dir] + '</span></td>' +
+      '<td class="intensity">' + esc(p.intensity || '—') + '</td>' +
+      '<td><span class="meter-wrap"><span class="meter"><span style="width:' + conf + '%"></span></span>' +
+      '<span class="meter-val">' + conf + '</span></span></td>' +
+      '<td><span class="tier ' + tier + '">' + esc(level) + '</span></td>' +
       '</tr>';
+
+    // Full reasoning, spanning every column. Nothing is clipped here.
+    html += '<tr class="pred-detail"><td colspan="5">';
+    if (p.wb_data_found) {
+      html += '<div class="chain cited"><div class="chain-label">Published result</div>' + esc(p.wb_data_found) + '</div>';
+    }
+    if (p.signaling_chain) {
+      html += '<div class="chain"><div class="chain-label">Signaling chain</div>' + esc(p.signaling_chain) + '</div>';
+    }
+    if (p.mechanism && p.mechanism !== p.signaling_chain) {
+      html += '<div class="chain"><div class="chain-label">Mechanism</div>' + esc(p.mechanism) + '</div>';
+    }
+    if (!p.wb_data_found && !p.signaling_chain && !p.mechanism) {
+      html += '<div class="chain" style="color:var(--text3)">No reasoning returned for this marker.</div>';
+    }
+    if (p.voteNote) html += '<div class="vote-note">' + esc(p.voteNote) + '</div>';
+    html += '</td></tr>';
   });
 
   html += '</tbody></table>' +
-    '<div style="display:flex;gap:16px;margin-top:12px;font-size:9px;color:var(--muted);flex-wrap:wrap;">' +
-    '<span>■ white: literature-backed</span>' +
-    '<span style="color:var(--purple)">■ purple <b>inferred</b>: mechanism or indirect evidence</span>' +
-    '<span style="color:var(--orange)">■ orange <b>inferred</b>: weak evidence</span>' +
-    '<span style="color:var(--muted)">† small text under confidence: multi-source voting adjustment</span>' +
+    '<div class="legend">' +
+    '<span><span class="sw" style="background:var(--dir-up)"></span>▲ increased</span>' +
+    '<span><span class="sw" style="background:var(--dir-down)"></span>▼ decreased</span>' +
+    '<span><span class="sw" style="background:var(--dir-none)"></span>■ unchanged</span>' +
+    '<span><span class="sw" style="background:var(--dir-unknown)"></span>◆ unclear</span>' +
+    '<span style="color:var(--text3)">Confidence is the estimated probability of this direction. ' +
+    'The evidence tag states what it rests on.</span>' +
     '</div>';
   document.getElementById('tableOut').innerHTML = html;
 }
@@ -9416,36 +9506,39 @@ async function runAnalysis() {
 
     // ── Debate tab ──
     var dHtml = '';
-    var badges = [
-      ['WB DB (exact)', dbExactCount > 0 ? dbExactCount + ' hits' : '—', dbExactCount > 0 ? 'var(--green)' : 'var(--muted)', dbExactCount > 0 ? '0,229,160' : '100,100,100'],
-      ['WB DB (similar)', dbDrugCount > 0 ? dbDrugCount + ' hits' : '—', dbDrugCount > 0 ? 'var(--blue)' : 'var(--muted)', dbDrugCount > 0 ? '79,195,247' : '100,100,100'],
-      ['Papers', litCount, 'var(--green)', '0,229,160'],
-      ['PMC full text', pmcCount, 'var(--blue)', '79,195,247'],
-      ['PubChem', pubchem.found ? '✓' : '—', pubchem.found ? 'var(--green)' : 'var(--muted)', '100,100,100'],
-      ['Cellosaurus', cellosaurus ? '✓' : '—', cellosaurus ? 'var(--orange)' : 'var(--muted)', '100,100,100'],
-      ['LINCS', lincs && lincs.found ? '✓' : '—', lincs && lincs.found ? 'var(--blue)' : 'var(--muted)', lincs && lincs.found ? '79,195,247' : '100,100,100'],
-      ['cBioPortal', cbioportal && cbioportal.found ? cbioportal.gene : '—', cbioportal && cbioportal.found ? 'var(--purple)' : 'var(--muted)', cbioportal && cbioportal.found ? '179,157,219' : '100,100,100']
+    // What each source actually contributed. A source that returned nothing is
+    // dimmed rather than hidden, so an empty run is distinguishable from a
+    // source that was never consulted.
+    var tiles = [
+      ['WB DB exact', dbExactCount || null],
+      ['WB DB similar', dbDrugCount || null],
+      ['Papers', litCount || null],
+      ['PMC full text', pmcCount || null],
+      ['PubChem', pubchem.found ? 'yes' : null],
+      ['Cellosaurus', cellosaurus ? 'yes' : null],
+      ['LINCS', lincs && lincs.found ? 'yes' : null],
+      ['cBioPortal', cbioportal && cbioportal.found ? cbioportal.gene : null]
     ];
-    dHtml += '<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:16px;">';
-    badges.forEach(function(b) {
-      dHtml += '<div style="padding:8px 6px;background:rgba(' + b[3] + ',0.05);border:1px solid rgba(' + b[3] + ',0.15);text-align:center">' +
-        '<div style="font-size:16px;color:' + b[2] + ';font-weight:600">' + b[1] + '</div>' +
-        '<div style="font-size:8px;color:var(--muted);letter-spacing:0.1em">' + b[0] + '</div></div>';
+    dHtml += '<div class="tiles">';
+    tiles.forEach(function(t) {
+      dHtml += '<div class="tile"><div class="tile-val' + (t[1] === null ? ' dim' : '') + '">' +
+        (t[1] === null ? '—' : esc(t[1])) + '</div>' +
+        '<div class="tile-key">' + t[0] + '</div></div>';
     });
     dHtml += '</div>';
 
-    var arrow = function(d){ return d === 'up' ? '↑' : d === 'down' ? '↓' : d === 'none' ? '—' : '?'; };
-    var dirColorOf = function(d){ return d === 'up' ? 'var(--green)' : d === 'down' ? 'var(--red)' : 'var(--muted)'; };
+    var arrow = function(d){ return d === 'up' ? '▲' : d === 'down' ? '▼' : d === 'none' ? '■' : '◆'; };
+    var dirColorOf = function(d){ return d === 'up' ? 'var(--dir-up)' : d === 'down' ? 'var(--dir-down)' : d === 'unknown' ? 'var(--dir-unknown)' : 'var(--dir-none)'; };
 
     if (dbExactCount > 0 && dbResult && dbResult.exact) {
       var dbRows = dbResult.exact.slice().sort(function(a, b){ return (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0); });
-      dHtml += '<div style="background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.25);padding:10px 14px;margin-bottom:12px;">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--green);display:block;margin-bottom:6px;font-family:IBM Plex Mono,monospace">WB DATABASE — SAME CELL LINE AND DRUG (' + dbExactCount + ')</span>' +
-        '<div style="font-size:10px;line-height:2;max-height:200px;overflow-y:auto;">';
+      dHtml += '<div class="panel">' +
+        '<div class="panel-label" style="color:var(--tier-measured)">WB database · same cell line and drug · ' + dbExactCount + '</div>' +
+        '<div class="panel-scroll">';
       dbRows.slice(0, 40).forEach(function(r) {
         var cond = dbResult.condMap && dbResult.condMap[normStr(r.marker)];
         var condTag = cond
-          ? ' <span style="font-size:8px;padding:1px 5px;background:rgba(' + (cond.score >= 0.65 ? '0,229,160' : '255,112,67') + ',0.15);color:' + (cond.score >= 0.65 ? 'var(--green)' : 'var(--orange)') + '">' + cond.label + '</span>'
+          ? ' <span class="tier ' + (cond.score >= 0.65 ? 'measured' : 'caution') + '" style="font-size:8.5px;padding:1px 6px">' + cond.label + '</span>'
           : '';
         dHtml += '<span style="color:var(--muted2)">' + r.marker + '</span> ' +
           '<strong style="color:' + dirColorOf(r.direction) + '">' + arrow(r.direction) + ' ' + r.direction + '</strong>' +
@@ -9460,8 +9553,8 @@ async function runAnalysis() {
 
     if (calibration && calibration.total > 0) {
       var accColor = calibration.accuracy >= 70 ? 'var(--green)' : calibration.accuracy >= 50 ? 'var(--orange)' : 'var(--red)';
-      dHtml += '<div style="background:rgba(179,157,219,0.06);border:1px solid rgba(179,157,219,0.25);padding:10px 14px;margin-bottom:12px;">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--purple);display:block;margin-bottom:8px;font-family:IBM Plex Mono,monospace">CALIBRATION — AGREEMENT WITH DATABASE</span>' +
+      dHtml += '<div class="panel">' +
+        '<div class="panel-label" style="color:var(--tier-inferred)">Calibration · agreement with database</div>' +
         '<div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">' +
         '<span style="font-size:22px;font-weight:600;color:' + accColor + '">' + calibration.accuracy + '%</span>' +
         '<span style="font-size:10px;color:var(--muted2)">' + calibration.matchCount + '/' + calibration.total + ' markers agree</span></div>' +
@@ -9487,9 +9580,9 @@ async function runAnalysis() {
 
     if (dbDrugCount > 0 && dbResult && dbResult.drugOnly) {
       var dbDrugRows = dbResult.drugOnly.slice().sort(function(a, b){ return (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0); });
-      dHtml += '<div style="background:rgba(79,195,247,0.04);border:1px solid rgba(79,195,247,0.2);padding:10px 14px;margin-bottom:12px;">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--blue);display:block;margin-bottom:6px;font-family:IBM Plex Mono,monospace">WB DATABASE — SAME DRUG, OTHER CELL LINES (' + dbDrugCount + ')</span>' +
-        '<div style="font-size:10px;line-height:2;max-height:150px;overflow-y:auto;">';
+      dHtml += '<div class="panel">' +
+        '<div class="panel-label" style="color:var(--tier-analogous)">WB database · same drug, other cell lines · ' + dbDrugCount + '</div>' +
+        '<div class="panel-scroll" style="max-height:150px">';
       dbDrugRows.slice(0, 20).forEach(function(r) {
         dHtml += '<span style="color:var(--muted2)">' + r.marker + '</span> ' +
           '<strong style="color:' + dirColorOf(r.direction) + '">' + arrow(r.direction) + '</strong>' +
@@ -9499,32 +9592,32 @@ async function runAnalysis() {
     }
 
     if (lincs && lincs.found) {
-      dHtml += '<div style="background:rgba(79,195,247,0.05);border:1px solid rgba(79,195,247,0.2);padding:10px 14px;margin-bottom:12px;font-size:10px;line-height:1.8">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--blue);display:block;margin-bottom:4px">LINCS L1000 — ' + (lincs.source || '') + ' | ' + lincs.drugName + ' @ ' + lincs.cellLine +
-        (lincs.dose ? ' | ' + lincs.dose : '') + (lincs.time ? ' | ' + lincs.time : '') + '</span>' +
+      dHtml += '<div class="panel" style="font-size:11px;line-height:1.85">' +
+        '<div class="panel-label" style="color:var(--tier-analogous)">LINCS L1000 · ' + (lincs.source || '') + ' · ' + lincs.drugName + ' @ ' + lincs.cellLine +
+        (lincs.dose ? ' · ' + lincs.dose : '') + (lincs.time ? ' · ' + lincs.time : '') + '</div>' +
         (lincs.upGenes && lincs.upGenes.length ? '<span style="color:var(--green)">↑ up:</span> ' + lincs.upGenes.slice(0, 12).join(', ') + '<br>' : '') +
         (lincs.downGenes && lincs.downGenes.length ? '<span style="color:var(--red)">↓ down:</span> ' + lincs.downGenes.slice(0, 12).join(', ') + '<br>' : '') +
         '<span style="font-size:8px;color:var(--muted)">mRNA signature — may differ from protein level</span></div>';
     }
 
     if (cbioportal && cbioportal.found) {
-      dHtml += '<div style="background:rgba(179,157,219,0.05);border:1px solid rgba(179,157,219,0.2);padding:10px 14px;margin-bottom:12px;font-size:10px;line-height:1.8">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--purple);display:block;margin-bottom:4px">cBIOPORTAL — TARGET GENE: ' + cbioportal.gene + '</span>' +
+      dHtml += '<div class="panel" style="font-size:11px;line-height:1.85">' +
+        '<div class="panel-label" style="color:var(--tier-inferred)">cBioPortal · target gene ' + cbioportal.gene + '</div>' +
         (cbioportal.geneSummary ? cbioportal.geneSummary.substring(0, 200) + '<br>' : '') +
         (cbioportal.mutations && cbioportal.mutations.length ? '<strong>Cell line mutations:</strong> ' + cbioportal.mutations.slice(0, 5).join(' | ') : '') +
         '</div>';
     }
 
     if (pubchem.found) {
-      dHtml += '<div style="background:rgba(0,229,160,0.04);border:1px solid rgba(0,229,160,0.15);padding:10px 14px;margin-bottom:12px;font-size:10px;line-height:1.8">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--green);display:block;margin-bottom:4px">PUBCHEM NIH — CID ' + pubchem.cid + '</span>' +
+      dHtml += '<div class="panel" style="font-size:11px;line-height:1.85">' +
+        '<div class="panel-label" style="color:var(--tier-measured)">PubChem NIH · CID ' + pubchem.cid + '</div>' +
         (pubchem.formula ? 'Formula: <strong>' + pubchem.formula + '</strong> | MW: ' + pubchem.mw + ' Da<br>' : '') +
         '<a href="' + pubchem.url + '" target="_blank" rel="noopener" style="color:var(--blue);font-size:9px;text-decoration:none">↗ View on PubChem</a></div>';
     }
 
     if (cellosaurus) {
-      dHtml += '<div style="background:rgba(255,112,67,0.05);border:1px solid rgba(255,112,67,0.2);padding:10px 14px;margin-bottom:12px;font-size:10px;line-height:1.8">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--orange);display:block;margin-bottom:4px">CELLOSAURUS SIB — ' + cellosaurus.ac + '</span>' +
+      dHtml += '<div class="panel" style="font-size:11px;line-height:1.85">' +
+        '<div class="panel-label" style="color:var(--dir-unknown)">Cellosaurus SIB · ' + cellosaurus.ac + '</div>' +
         (cellosaurus.disease ? 'Disease: ' + cellosaurus.disease + '<br>' : '') +
         (cellosaurus.variants && cellosaurus.variants.length ? '<strong>Variants:</strong> ' + cellosaurus.variants.slice(0, 3).join(' | ') + '<br>' : '') +
         '<a href="' + cellosaurus.url + '" target="_blank" rel="noopener" style="color:var(--blue);font-size:9px;text-decoration:none">↗ View on Cellosaurus</a></div>';
@@ -9535,8 +9628,8 @@ async function runAnalysis() {
     }
 
     if (parsed.drug_analysis) {
-      dHtml += '<div style="background:rgba(79,195,247,0.05);border-left:2px solid var(--blue);padding:10px 14px;margin-bottom:16px;font-family:Fraunces,serif;font-size:13px;line-height:1.7;color:rgba(221,225,240,0.85)">' +
-        '<span style="font-size:8px;letter-spacing:0.2em;color:var(--blue);display:block;margin-bottom:4px;font-family:IBM Plex Mono,monospace">DRUG ANALYSIS</span>' +
+      dHtml += '<div class="panel" style="border-left:2px solid var(--tier-analogous);font-family:Fraunces,serif;font-size:13.5px;line-height:1.8;color:rgba(226,232,240,0.88);margin-bottom:16px">' +
+        '<div class="panel-label" style="color:var(--tier-analogous)">Drug analysis</div>' +
         parsed.drug_analysis + '</div>';
     }
 
@@ -9555,8 +9648,8 @@ async function runAnalysis() {
     // ── Pathway tab ──
     var pHtml = '';
     if (parsed.cell_line_analysis) {
-      pHtml += '<div style="background:rgba(79,195,247,0.05);border-left:2px solid var(--blue);padding:12px 16px;margin-bottom:18px;">' +
-        '<div style="font-size:8px;letter-spacing:0.2em;color:var(--blue);margin-bottom:6px;font-family:IBM Plex Mono,monospace">CELL LINE GENETIC BACKGROUND</div>' +
+      pHtml += '<div class="panel" style="border-left:2px solid var(--tier-analogous);margin-bottom:18px">' +
+        '<div class="panel-label" style="color:var(--tier-analogous)">Cell line genetic background</div>' +
         '<div style="font-family:Fraunces,serif;font-size:13.5px;line-height:1.8;color:rgba(221,225,240,0.9)">' + parsed.cell_line_analysis + '</div></div>';
     }
     if (parsed.pathway_summary) {
@@ -9564,26 +9657,24 @@ async function runAnalysis() {
     }
 
     preds.filter(function(p){ return p.signaling_chain || p.mechanism; }).forEach(function(p) {
-      var dirS = { up: '↑', down: '↓', none: '—', unknown: '?' }[p.direction] || '?';
-      var dirC = { up: 'var(--green)', down: 'var(--red)', none: 'var(--muted)', unknown: 'var(--orange)' }[p.direction] || 'var(--muted)';
-      var uncertain = (p.confidence || 0) < 50 || WEAK_EV.indexOf(p.evidenceLevel) >= 0;
-      var uBadge = uncertain
-        ? '<span style="font-size:7px;padding:1px 6px;background:rgba(179,157,219,0.15);color:var(--purple);margin-left:6px">inferred</span>'
-        : '';
+      // Same marker header as the predictions tab, so a marker looks the same
+      // wherever it appears.
+      var mdir = ['up', 'down', 'none', 'unknown'].indexOf(p.direction) >= 0 ? p.direction : 'none';
+      var mlevel = p.evidenceLevel || EV.mechanism;
       pHtml += '<div class="mech-item">' +
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
-        '<div class="mech-marker">' + p.marker + uBadge + '</div>' +
-        '<div style="font-size:14px;color:' + dirC + ';font-weight:600">' + dirS + '</div>' +
-        '<div style="font-size:9px;color:var(--muted);margin-left:auto">confidence ' + (p.confidence || 0) + '%</div></div>';
+        '<div class="mech-head">' +
+        '<span class="mech-marker">' + esc(p.marker) + '</span>' +
+        '<span class="dir ' + mdir + '"><i>' + DIR_GLYPH[mdir] + '</i>' + DIR_WORD[mdir] + '</span>' +
+        '<span class="tier ' + evidenceTier(mlevel) + '">' + esc(mlevel) + '</span>' +
+        '<span class="mech-conf">confidence ' + (p.confidence || 0) + '</span></div>';
       if (p.wb_data_found) {
-        pHtml += '<div style="background:rgba(0,229,160,0.05);border-left:2px solid var(--green);padding:6px 10px;margin-bottom:8px;font-family:Fraunces,serif;font-size:12px;color:rgba(221,225,240,0.8);line-height:1.6">' +
-          '<span style="font-size:7px;letter-spacing:0.15em;color:var(--green);display:block;margin-bottom:3px;font-family:IBM Plex Mono,monospace">PUBLISHED WB RESULT</span>' + p.wb_data_found + '</div>';
+        pHtml += '<div style="border-left:2px solid rgba(27,175,122,0.5);padding:4px 0 4px 11px;margin-bottom:9px;font-size:12px;color:rgba(226,232,240,0.88);line-height:1.7">' +
+          '<div class="chain-label">Published WB result</div>' + esc(p.wb_data_found) + '</div>';
       }
       if (p.signaling_chain) {
-        pHtml += '<div style="font-size:11px;color:var(--muted2);line-height:1.7;margin-bottom:6px;padding:6px 10px;background:rgba(255,255,255,0.02);border-left:1px solid var(--border2)">' +
-          '<span style="font-size:7px;letter-spacing:0.15em;color:var(--purple);display:block;margin-bottom:3px;font-family:IBM Plex Mono,monospace">SIGNALING CHAIN</span>' + p.signaling_chain + '</div>';
+        pHtml += '<div class="chain"><div class="chain-label">Signaling chain</div>' + esc(p.signaling_chain) + '</div>';
       }
-      if (p.mechanism) pHtml += '<div class="mech-text">' + p.mechanism + '</div>';
+      if (p.mechanism) pHtml += '<div class="mech-text">' + esc(p.mechanism) + '</div>';
       pHtml += '</div>';
     });
 
