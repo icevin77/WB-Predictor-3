@@ -81,14 +81,14 @@ body::after {
   z-index: 100;
   flex-wrap: wrap;
 }
-.logo-mark { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); font-weight: 500; }
+.logo-mark { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; color: var(--accent); font-weight: 500; }
 .logo-sub { font-size: 12px; color: var(--text3); font-weight: 400; }
-.version-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--text3); border: 1px solid var(--border2); padding: 3px 9px; border-radius: 3px; }
+.version-tag { font-size: 10.5px; letter-spacing: 0.04em; color: var(--text3); border: 1px solid var(--border2); padding: 3px 9px; border-radius: 3px; }
 .main-layout { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 52px); }
 .sidebar { border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; background: var(--surface); scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
 .section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
 .section:last-child { border-bottom: none; }
-.section-label { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.22em; color: var(--text3); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.section-label { font-size: 10.5px; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 .section-label .num { color: var(--accent); font-size: 8px; }
 label { display: block; font-size: 10px; font-weight: 500; color: var(--text2); margin-bottom: 5px; margin-top: 14px; letter-spacing: 0.02em; }
 label:first-of-type { margin-top: 0; }
@@ -106,7 +106,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .mode-btn { font-family: var(--sans); font-size: 11px; font-weight: 500; padding: 8px 6px; cursor: pointer; color: var(--text3); background: transparent; border: none; transition: all 0.15s; text-align: center; }
 .mode-btn.active { background: var(--accent-dim); color: var(--accent); }
 .marker-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
-.mtag { font-family: var(--mono); font-size: 9.5px; padding: 4px 8px; border: 1px solid var(--border2); cursor: pointer; color: var(--text3); background: transparent; transition: all 0.12s; border-radius: 3px; }
+.mtag { font-size: 11px; padding: 4px 8px; border: 1px solid var(--border2); cursor: pointer; color: var(--text3); background: transparent; transition: all 0.12s; border-radius: 3px; }
 .mtag:hover { border-color: var(--accent); color: var(--accent); }
 .mtag.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 .custom-marker-row { display: flex; gap: 6px; margin-top: 10px; }
@@ -134,42 +134,36 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .tc.active { display: block; }
 .warn { background: rgba(251,146,60,0.06); border: 1px solid rgba(251,146,60,0.2); border-left: 3px solid var(--orange); padding: 10px 14px; font-size: 11px; color: rgba(251,146,60,0.85); line-height: 1.6; margin-bottom: 24px; border-radius: 0 5px 5px 0; }
 .gel-wrap { background: #030408; border: 1px solid var(--border); padding: 20px 24px 24px; margin-bottom: 20px; border-radius: 6px; }
-.gel-header { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text3); text-transform: uppercase; margin-bottom: 16px; display: flex; justify-content: space-between; }
+.gel-note { font-size: 11.5px; line-height: 1.75; color: var(--text3); max-width: 84ch; margin-top: 12px; }
+.gel-header { font-size: 11px; letter-spacing: 0.08em; color: var(--text2); text-transform: uppercase; margin-bottom: 18px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 /* Predictions are a list of markers, not a dense grid: the metrics sit on one
    scannable line and the reasoning gets the full column width underneath, so
    nothing has to be truncated. */
-.pred-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.pred-table th { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2); padding: 2px 14px 11px; border-bottom: 1px solid var(--border2); text-align: left; font-weight: 400; white-space: nowrap; }
-/* Metric columns are sized to their content so they cluster beside the marker
-   name; the evidence column absorbs the slack. */
-.pred-table th:nth-child(1) { width: 20%; min-width: 150px; }
-.pred-table th:nth-child(2) { width: 130px; }
-.pred-table th:nth-child(3) { width: 96px; }
-.pred-table th:nth-child(4) { width: 132px; }
-.pred-table td { padding: 12px 14px 0; vertical-align: baseline; line-height: 1.5; }
-.pred-row > td { padding-top: 14px; }
-.pred-row:hover > td, .pred-row:hover + .pred-detail > td { background: rgba(255,255,255,0.016); }
-.pred-detail > td { padding: 8px 14px 16px; border-bottom: 1px solid var(--border); }
-.pred-marker { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; }
+/* One marker, one card. The header carries the call; the body carries the
+   reasoning at a size meant to be read rather than skimmed past. */
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 16px 18px 17px; }
+.card:hover { border-color: var(--border2); }
+.card-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 3px; }
+.card-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+.card-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-left: auto; }
+.card-body { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--border); }
 
-/* Colour sits in the glyph; the word stays in body ink so identity never
-   depends on hue. */
-.dir { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12px; color: var(--text); }
+/* Colour lives in the glyph; the word stays in reading ink. */
+.dir { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 13px; color: var(--text); }
 .dir i { font-style: normal; font-size: 11px; line-height: 1; }
 .dir.up i { color: var(--dir-up); } .dir.down i { color: var(--dir-down); }
 .dir.none i { color: var(--dir-none); } .dir.unknown i { color: var(--dir-unknown); }
 .dir.none { color: var(--text2); }
+.intensity { font-size: 12.5px; color: var(--text2); white-space: nowrap; }
 
-.intensity { font-family: var(--mono); font-size: 10.5px; color: var(--text2); white-space: nowrap; }
-
-/* Meter: single hue, square at the baseline and rounded at the data end, so
-   length alone carries magnitude. */
 .meter-wrap { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
-.meter { width: 64px; height: 6px; background: var(--border2); border-radius: 1px; overflow: hidden; flex-shrink: 0; }
+.meter { width: 58px; height: 5px; background: var(--border2); border-radius: 1px; overflow: hidden; flex-shrink: 0; }
 .meter > span { display: block; height: 100%; background: var(--meter); border-radius: 0 3px 3px 0; transition: width 1s ease; }
-.meter-val { font-family: var(--mono); font-size: 11.5px; color: var(--text); font-variant-numeric: tabular-nums; }
+.meter-val { font-family: var(--mono); font-size: 12px; color: var(--text); font-variant-numeric: tabular-nums; }
+.meter-cap { font-size: 11.5px; color: var(--text3); }
 
-.tier { display: inline-block; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 3px; white-space: nowrap; border: 1px solid; }
+.tier { display: inline-block; font-size: 11.5px; padding: 3px 9px; border-radius: 3px; white-space: nowrap; border: 1px solid; }
 .tier.measured  { color: var(--tier-measured);  border-color: rgba(27,175,122,0.4);  background: rgba(27,175,122,0.09); }
 .tier.analogous { color: var(--tier-analogous); border-color: rgba(96,165,250,0.4);  background: rgba(96,165,250,0.09); }
 .tier.inferred  { color: var(--tier-inferred);  border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.09); }
@@ -177,36 +171,37 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .tier.control   { color: var(--text2);          border-color: var(--border2);        background: rgba(255,255,255,0.03); }
 .tier.caution   { color: var(--dir-unknown);    border-color: rgba(201,133,0,0.45);  background: rgba(201,133,0,0.09); }
 
-/* The reasoning block. No clamping — this is the part being read. */
-.chain { font-size: 12px; line-height: 1.75; color: var(--text2); max-width: 86ch; }
-.chain-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
-.chain + .chain { margin-top: 10px; }
-.chain.cited { color: rgba(226,232,240,0.88); border-left: 2px solid rgba(27,175,122,0.5); padding-left: 11px; }
-.vote-note { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 8px; letter-spacing: 0.02em; }
-.method-fig { margin: 0 0 26px; }
-.method-fig svg { width: 100%; max-width: 1160px; height: auto; color: var(--text); display: block; }
-.method-fig figcaption { font-size: 12px; line-height: 1.8; color: var(--text2); max-width: 92ch; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-.method-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
-.method-note { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; font-size: 12px; line-height: 1.8; color: var(--text2); }
-.cite { font-family: var(--mono); font-size: 10px; color: var(--tier-analogous); text-decoration: none; border-bottom: 1px solid rgba(96,165,250,0.35); }
-.cite:hover { border-bottom-color: var(--tier-analogous); }
-.prose { font-size: 12.5px; line-height: 1.8; color: rgba(226,232,240,0.88); max-width: 92ch; }
-.legend { display: flex; gap: 18px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--text2); flex-wrap: wrap; align-items: center; }
-.legend b { font-weight: 500; color: var(--text); }
-.legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+/* The reasoning. Brighter than secondary ink and measured for reading. */
+.chain { font-size: 13px; line-height: 1.75; color: #c3cad8; max-width: 84ch; }
+.chain + .chain { margin-top: 11px; }
+.chain-label { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+.chain.cited { color: var(--text); border-left: 2px solid rgba(27,175,122,0.55); padding-left: 12px; }
+.vote-note { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-top: 11px; }
 
-/* Source tiles. auto-fit so eight tiles do not crush at narrow widths. */
+.legend { display: flex; gap: 18px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text2); flex-wrap: wrap; align-items: center; }
+.legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.lede { font-size: 13px; line-height: 1.7; color: var(--text2); max-width: 84ch; margin-bottom: 18px; }
+
+/* Next experiments */
+.exp { display: flex; gap: 13px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.exp-n { font-family: var(--mono); font-size: 11.5px; color: var(--text3); flex-shrink: 0; width: 18px; }
+.exp-t { font-size: 13px; line-height: 1.7; color: #c3cad8; max-width: 84ch; }
+.exp-group { margin-top: 26px; }
+.exp-group-t { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 11px; }
+.exp-weak { display: flex; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.exp-weak-m { font-family: var(--mono); font-size: 11.5px; color: var(--text3); margin-left: auto; }
+
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 8px; margin-bottom: 20px; }
 .tile { padding: 11px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; }
 .tile-val { font-family: var(--mono); font-size: 17px; font-weight: 500; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
 .tile-val.dim { color: var(--text3); }
-.tile-key { font-size: 9.5px; letter-spacing: 0.08em; color: var(--text2); margin-top: 5px; text-transform: uppercase; }
-.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 13px 16px; margin-bottom: 12px; }
-.panel-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-bottom: 9px; }
+.tile-key { font-size: 10.5px; letter-spacing: 0.04em; color: var(--text2); margin-top: 5px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+.panel-label { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; }
 .panel-scroll { font-size: 11px; line-height: 1.95; max-height: 220px; overflow-y: auto; }
 .debate-round { margin-bottom: 22px; animation: rise 0.35s ease; }
 @keyframes rise { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-.round-tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.round-tag { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
 .tag-a { color: var(--accent); } .tag-b { color: var(--orange); } .tag-j { color: var(--purple); }
 .bubble { font-size: 12.5px; line-height: 1.8; padding: 13px 16px; border-left: 2px solid; background: rgba(255,255,255,0.018); color: rgba(226,232,240,0.9); border-radius: 0 5px 5px 0; max-width: 92ch; }
 .bubble.a { border-color: var(--accent); } .bubble.b { border-color: var(--orange); } .bubble.j { border-color: var(--purple); background: rgba(167,139,250,0.04); }
@@ -214,7 +209,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .mech-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 .mech-item:last-child { border-bottom: none; }
 .mech-head { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; flex-wrap: wrap; }
-.mech-marker { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--text); }
+.mech-marker { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
 .mech-conf { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-left: auto; font-variant-numeric: tabular-nums; }
 .mech-text { font-size: 12px; line-height: 1.75; color: var(--text2); max-width: 86ch; margin-top: 9px; }
 .no-data { background: rgba(251,146,60,0.05); border: 1px dashed rgba(251,146,60,0.25); padding: 12px 16px; font-size: 11px; color: rgba(251,146,60,0.75); line-height: 1.7; margin-bottom: 18px; border-radius: 5px; }
@@ -389,7 +384,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
       <button class="tab" onclick="showTab('gel')">Western blot</button>
       <button class="tab" onclick="showTab('debate')">AI debate</button>
       <button class="tab" onclick="showTab('pathway')">Signaling mechanism</button>
-      <button class="tab" onclick="showTab('method')">Method</button>
+      <button class="tab" onclick="showTab('validation')">Next experiments</button>
     </div>
     <div class="tab-body">
       <div class="tc active" id="tc-table"><div id="tableOut"><div class="empty"><span>No predictions yet</span></div></div></div>
@@ -399,149 +394,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
       </div>
       <div class="tc" id="tc-debate"><div id="debateOut"><div class="empty"><span>Awaiting AI debate</span></div></div></div>
       <div class="tc" id="tc-pathway"><div id="pathwayOut"><div class="empty"><span>No mechanism analysis</span></div></div></div>
-      <div class="tc" id="tc-method">
-        <figure class="method-fig">
-        <svg viewBox="0 0 1160 980" role="img" width="100%"
-             aria-label="Pipeline of the western blot predictor: one query fans out to the embedded blot database and to external compound, cell line, literature and omics sources; the results are assembled into a priority-ordered corpus, sent through a server-side function to the model, then corrected by multi-source voting, condition matching, loading-control pinning and a citation filter before reaching the four result tabs.">
-          <defs>
-            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
-            </marker>
-          </defs>
-          <g fill="currentColor" font-size="12.5">
-
-            <!-- 1. Input -->
-            <text x="40" y="26" font-size="10.5" letter-spacing="1.8" opacity=".55">01 · QUERY</text>
-            <rect x="40" y="36" width="1080" height="52" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="60" y="67">Cell line · drug name, or SMILES plus a proposed target · concentration · treatment time · marker panel</text>
-
-            <line x1="580" y1="88" x2="580" y2="122" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
-
-            <!-- 2. Retrieval -->
-            <text x="40" y="146" font-size="10.5" letter-spacing="1.8" opacity=".55">02 · RETRIEVAL &#8212; IN PARALLEL, EACH SOURCE MAY FAIL WITHOUT STOPPING THE RUN</text>
-            <rect x="40" y="158" width="330" height="172" rx="6" fill="#1baf7a" fill-opacity=".07" stroke="#1baf7a" stroke-opacity=".55"/>
-            <text x="60" y="184" font-size="12.5" font-weight="600" fill="#1baf7a">Embedded blot database</text>
-            <text x="60" y="206" opacity=".82">7,824 rows extracted from papers</text>
-            <text x="60" y="228" opacity=".82">exact &#8212; same drug + same cell line</text>
-            <text x="60" y="250" opacity=".82">analogous &#8212; same drug, other lines</text>
-            <text x="60" y="272" opacity=".82">condition score from dose and time</text>
-            <text x="60" y="305" font-size="11" opacity=".6">offline, instant, no network needed</text>
-
-            <rect x="396" y="158" width="330" height="172" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="416" y="184" font-size="12.5" font-weight="600" fill="#60a5fa">Compound and cell line</text>
-            <text x="416" y="206" opacity=".82">PubChem &#8212; formula, SMILES, pharmacology</text>
-            <text x="416" y="228" opacity=".82">Cellosaurus &#8212; disease, sequence variants</text>
-            <text x="416" y="250" opacity=".82">built-in notes for lines it cannot resolve</text>
-            <text x="416" y="272" opacity=".82">e.g. MCF-7 is CASP3-null</text>
-            <text x="416" y="305" font-size="11" opacity=".6">a deficient marker can never be called changed</text>
-
-            <rect x="752" y="158" width="368" height="172" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="772" y="184" font-size="12.5" font-weight="600" fill="#60a5fa">Literature and omics</text>
-            <text x="772" y="206" opacity=".82">Semantic Scholar &#8594; PMC full text</text>
-            <text x="772" y="228" opacity=".82">PubMed &#8212; indirect search, per marker</text>
-            <text x="772" y="250" opacity=".82">UniProt &#8212; protein function and pathway</text>
-            <text x="772" y="272" opacity=".82">LINCS L1000 · cBioPortal</text>
-            <text x="772" y="305" font-size="11" opacity=".6">hard deadline: 20s, then 25s</text>
-
-            <line x1="205" y1="330" x2="205" y2="372" stroke="#1baf7a" stroke-opacity=".75" marker-end="url(#ar)"/>
-            <line x1="561" y1="330" x2="561" y2="372" stroke="currentColor" stroke-opacity=".4" marker-end="url(#ar)"/>
-            <line x1="936" y1="330" x2="936" y2="372" stroke="currentColor" stroke-opacity=".4" marker-end="url(#ar)"/>
-            <text x="215" y="356" font-size="11" fill="#1baf7a" opacity=".95">placed first</text>
-
-            <!-- 3. Corpus -->
-            <text x="40" y="398" font-size="10.5" letter-spacing="1.8" opacity=".55">03 · CORPUS, ORDERED BY HOW DIRECT THE EVIDENCE IS</text>
-            <rect x="40" y="410" width="1080" height="92" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="60" y="440" font-size="11.5" fill="#1baf7a">1 · database, exact</text>
-            <text x="245" y="440" font-size="11.5" fill="#1baf7a" opacity=".75">2 · database, analogous</text>
-            <text x="455" y="440" font-size="11.5" opacity=".8">3 · papers</text>
-            <text x="610" y="440" font-size="11.5" opacity=".8">4 · marker protein data</text>
-            <text x="830" y="440" font-size="11.5" opacity=".8">5 · LINCS, cBioPortal</text>
-            <text x="60" y="476" font-size="11.5" opacity=".62">Papers that actually mention a blot are given three times the prompt budget of those that do not. Omics data is adjustment material, never the basis for a call.</text>
-
-            <line x1="580" y1="502" x2="580" y2="540" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
-            <text x="592" y="526" font-size="11" opacity=".7">corpus + rules</text>
-
-            <!-- 4. Model -->
-            <text x="40" y="566" font-size="10.5" letter-spacing="1.8" opacity=".55">04 · PREDICTION</text>
-            <rect x="40" y="578" width="1080" height="96" rx="6" fill="#a78bfa" fill-opacity=".06" stroke="#a78bfa" stroke-opacity=".5"/>
-            <text x="62" y="610" font-size="12">Browser</text>
-            <line x1="130" y1="606" x2="196" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
-            <text x="134" y="598" font-size="10" opacity=".6">no key</text>
-            <text x="210" y="610" font-family="monospace" font-size="12">/api/chat</text>
-            <line x1="300" y1="606" x2="366" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
-            <text x="380" y="610" font-size="12">Vercel function</text>
-            <line x1="490" y1="606" x2="556" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
-            <text x="494" y="598" font-size="10" opacity=".6">+ key</text>
-            <text x="570" y="610" font-size="12" font-weight="600" fill="#a78bfa">Claude</text>
-            <text x="62" y="648" font-size="11.5" opacity=".72">Returns, per marker: direction · intensity · confidence · evidence level · signaling chain, plus a four-round debate and a pathway summary.</text>
-
-            <line x1="580" y1="674" x2="580" y2="712" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
-
-            <!-- 5. Correction -->
-            <text x="40" y="738" font-size="10.5" letter-spacing="1.8" opacity=".55">05 · CORRECTION &#8212; THE MODEL&#8217;S ANSWER IS NOT TAKEN AT FACE VALUE</text>
-            <rect x="40" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="58" y="776" font-size="12" font-weight="600">Weighted vote</text>
-            <text x="58" y="800" font-size="11.5" opacity=".8">database ×3</text>
-            <text x="58" y="822" font-size="11.5" opacity=".8">model ×2 · LINCS ×1</text>
-            <text x="58" y="850" font-size="11" opacity=".62">agreement moves</text>
-            <text x="58" y="868" font-size="11" opacity=".62">confidence by &#177;15</text>
-
-            <rect x="314" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="332" y="776" font-size="12" font-weight="600">Condition match</text>
-            <text x="332" y="800" font-size="11.5" opacity=".8">dose on a log scale</text>
-            <text x="332" y="822" font-size="11.5" opacity=".8">timepoint distance</text>
-            <text x="332" y="850" font-size="11" opacity=".62">a result at 100× the dose</text>
-            <text x="332" y="868" font-size="11" opacity=".62">is worth less</text>
-
-            <rect x="588" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="606" y="776" font-size="12" font-weight="600">Controls pinned</text>
-            <text x="606" y="800" font-size="11.5" opacity=".8">&#946;-actin, GAPDH, tubulin</text>
-            <text x="606" y="822" font-size="11.5" opacity=".8">forced to unchanged</text>
-            <text x="606" y="850" font-size="11" opacity=".62">a loading control that</text>
-            <text x="606" y="868" font-size="11" opacity=".62">moves is a bug, not data</text>
-
-            <rect x="862" y="750" width="258" height="132" rx="6" fill="#c98500" fill-opacity=".07" stroke="#c98500" stroke-opacity=".5"/>
-            <text x="880" y="776" font-size="12" font-weight="600" fill="#c98500">Citation filter</text>
-            <text x="880" y="800" font-size="11.5" opacity=".8">keeps only identifiers</text>
-            <text x="880" y="822" font-size="11.5" opacity=".8">retrieved in this run</text>
-            <text x="880" y="850" font-size="11" opacity=".62">anything written from</text>
-            <text x="880" y="868" font-size="11" opacity=".62">memory is deleted</text>
-
-            <line x1="580" y1="882" x2="580" y2="918" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
-
-            <!-- 6. Output -->
-            <rect x="40" y="930" width="1080" height="40" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
-            <text x="60" y="956" font-size="12" opacity=".88">Predictions &#160;·&#160; blot simulation &#160;·&#160; debate and calibration &#160;·&#160; mechanism</text>
-          </g>
-        </svg>
-        <figcaption>
-          Every call is traceable to the tier of evidence behind it. The embedded database is consulted
-          first and weighted highest; the model never sets a direction from omics data alone; loading
-          controls are pinned rather than predicted; and an article identifier is shown only when this
-          run actually retrieved that record.
-        </figcaption>
-        </figure>
-
-        <div class="method-notes">
-          <div class="method-note">
-            <div class="chain-label">Why the database comes first</div>
-            A row in the embedded database is a blot someone already ran and published. It outranks
-            anything the model can reason its way to, so those rows are placed at the top of the corpus,
-            labelled as the highest priority, and given three votes in the final tally.
-          </div>
-          <div class="method-note">
-            <div class="chain-label">What confidence means</div>
-            The estimated probability that the marker moves in the stated direction &#8212; not how sure the
-            model sounds. A clear mechanism can score high with no paper behind it; a paper run at a very
-            different dose or timepoint scores lower than its directness suggests.
-          </div>
-          <div class="method-note">
-            <div class="chain-label">What it cannot do</div>
-            It predicts from published results and signaling logic, never from experiment. Novel compounds
-            are inferred from structural analogues plus a proposed target and carry the most uncertainty.
-            Treat every call as a hypothesis to test at the bench.
-          </div>
-        </div>
+      <div class="tc" id="tc-validation"><div id="validationOut"><div class="empty"><span>No suggestions yet</span></div></div></div>
       </div>
     </div>
   </div>
@@ -8568,6 +8421,7 @@ function applyVoting(preds, dbResult, lincs) {
 
   preds.forEach(function(p) {
     if (!p.marker) return;
+    if (HOUSEKEEPING.indexOf(p.marker) >= 0) { p.voteNote = null; return; }
     var mn = normStr(p.marker);
     var aiDir = (p.direction || '').toLowerCase();
     var votes = [];
@@ -8600,7 +8454,7 @@ function applyVoting(preds, dbResult, lincs) {
 
     p.confidence = Math.max(5, Math.min(97, (p.confidence || 0) + delta));
 
-    var srcLabels = votes.map(function(v){ return v.src + ':' + (v.dir === 'up' ? '↑' : v.dir === 'down' ? '↓' : '—'); });
+    var srcLabels = votes.map(function(v){ return v.src + ' ' + (DIR_GLYPH[v.dir] || '◆'); });
     var condNote = condMap[mn] ? ' | ' + condMap[mn].label + ' (' + Math.round(condMap[mn].score * 100) + '%)' : '';
     p.voteNote = srcLabels.join(' / ') + (delta !== 0 ? (delta > 0 ? ' → +' : ' → ') + delta : '') + condNote;
   });
@@ -8764,7 +8618,7 @@ function getMarkers() {
 }
 
 function showTab(n) {
-  const ns = ['table', 'gel', 'debate', 'pathway', 'method'];
+  const ns = ['table', 'gel', 'debate', 'pathway', 'validation'];
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ns[i] === n));
   document.querySelectorAll('.tc').forEach(c => c.classList.remove('active'));
   document.getElementById('tc-' + n).classList.add('active');
@@ -9087,24 +8941,42 @@ function getQuirks(cellLine) {
 }
 
 // ── Gel rendering ──
+// Relative band abundance, 0..1, for the control and treated lanes.
+// A blot shows how much protein is present, not a direction, so the two lanes
+// are derived from a baseline and the reported change.
+var INTENSITY_W = { high: 0.9, strong: 0.9, medium: 0.6, low: 0.3, weak: 0.3, faint: 0.15, unknown: 0.5 };
+
+function bandLevels(p, isCtrl) {
+  if (isCtrl) return { ctrl: 0.8, treat: 0.8 };
+  var w = INTENSITY_W[p.intensity] || 0.5;
+  // A cleavage product is generated by the treatment, so an untreated lane is
+  // essentially blank; a phospho-epitope has a low basal signal, not none.
+  var base = /^cleaved|^cl\./i.test(p.marker) ? 0.05
+           : /^p-|^phospho|H2AX/i.test(p.marker) ? 0.32
+           : 0.7;
+  var treat = base;
+  if (p.direction === 'up') treat = base + (1 - base) * w;
+  else if (p.direction === 'down') treat = base * (1 - w * 0.85);
+  return { ctrl: base, treat: Math.max(0.02, Math.min(0.97, treat)) };
+}
+
 function renderGel(preds, cellLine, drugLabel) {
   var CTRL = ['β-actin', 'GAPDH'];
   var CTRL_Y = { 'β-actin': 88, 'GAPDH': 94 };
-  var IM = { high: 1, medium: 0.65, low: 0.3, faint: 0.12, unknown: 0.4 };
-  var GH = 260;
+  var GH = 268;
 
-  var nonCtrl = preds.filter(function(p){ return CTRL.indexOf(p.marker) < 0; });
-  var ctrl = preds.filter(function(p){ return CTRL.indexOf(p.marker) >= 0; });
-  nonCtrl.sort(function(a, b){ return (MW_DATA[b.marker] || 50) - (MW_DATA[a.marker] || 50); });
+  var nonCtrl = preds.filter(function(p) { return CTRL.indexOf(p.marker) < 0; });
+  var ctrl = preds.filter(function(p) { return CTRL.indexOf(p.marker) >= 0; });
+  nonCtrl.sort(function(a, b) { return (MW_DATA[b.marker] || 50) - (MW_DATA[a.marker] || 50); });
   var all = nonCtrl.concat(ctrl);
 
   function by(p) {
     return CTRL.indexOf(p.marker) >= 0 ? (CTRL_Y[p.marker] || 90) : mw2y(MW_DATA[p.marker] || 50);
   }
 
-  // Push overlapping labels apart while leaving the bands themselves in place.
-  var MIN = 5.5;
-  var items = all.map(function(p){ return { marker: p.marker, adj: by(p) }; });
+  // Push overlapping labels apart while leaving the bands at their true weight.
+  var MIN = 5.8;
+  var items = all.map(function(p) { return { marker: p.marker, adj: by(p) }; });
   for (var pass = 0; pass < 30; pass++) {
     var moved = false;
     for (var i = 1; i < items.length; i++) {
@@ -9113,67 +8985,73 @@ function renderGel(preds, cellLine, drugLabel) {
     if (!moved) break;
   }
   var LY = {};
-  items.forEach(function(d){ LY[d.marker] = d.adj; });
+  items.forEach(function(d) { LY[d.marker] = d.adj; });
 
   var LADDER = [200, 100, 50, 25, 15];
   var html = '<div class="gel-wrap">' +
-    '<div class="gel-header"><span>Western blot simulation</span>' +
+    '<div class="gel-header"><span>Simulated blot</span>' +
     '<span style="color:var(--text2)">' + esc(cellLine) + '  ·  ' + esc(drugLabel) + '</span></div>' +
     '<div style="display:flex;align-items:flex-start;justify-content:center;">';
 
-  html += '<div style="width:42px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:22px;">';
+  html += '<div style="width:44px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:24px;">';
   LADDER.forEach(function(mw) {
-    html += '<div style="position:absolute;top:' + mw2y(mw) + '%;right:5px;font-family:var(--mono);font-size:9px;color:var(--text3);transform:translateY(-50%)">' + mw + '</div>';
+    html += '<div style="position:absolute;top:' + mw2y(mw) + '%;right:6px;font-family:var(--mono);font-size:9.5px;color:var(--text3);transform:translateY(-50%)">' + mw + '</div>';
   });
-  html += '</div>';
+  html += '<div style="position:absolute;bottom:-18px;right:6px;font-size:9px;color:var(--text3)">kDa</div></div>';
 
-  html += '<div style="width:124px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:22px;">';
+  // Label gutter. The coloured tick is the only place direction is encoded,
+  // which keeps the blot itself greyscale the way a real one is.
+  html += '<div style="width:150px;flex-shrink:0;position:relative;height:' + GH + 'px;margin-top:24px;">';
   all.forEach(function(p) {
     var bY = by(p), lY = LY[p.marker];
+    var isC = CTRL.indexOf(p.marker) >= 0;
+    var dir = ['up', 'down', 'none', 'unknown'].indexOf(p.direction) >= 0 ? p.direction : 'none';
+    var tick = isC ? '' :
+      '<span style="color:var(--dir-' + dir + ');font-size:8px;margin-left:5px">' + DIR_GLYPH[dir] + '</span>';
     if (Math.abs(lY - bY) > 1.5) {
-      html += '<div style="position:absolute;right:8px;top:' + Math.min(bY, lY) + '%;height:' + Math.abs(lY - bY) + '%;width:1px;background:rgba(107,112,148,0.2)"></div>';
+      html += '<div style="position:absolute;right:8px;top:' + Math.min(bY, lY) + '%;height:' + Math.abs(lY - bY) + '%;width:1px;background:rgba(107,112,148,0.22)"></div>';
     }
-    html += '<div style="position:absolute;right:6px;top:' + bY + '%;width:3px;height:3px;border-radius:50%;background:rgba(107,112,148,0.4);transform:translateY(-50%)"></div>';
-    html += '<div style="position:absolute;right:13px;top:' + lY + '%;font-size:9px;color:var(--text2);white-space:nowrap;transform:translateY(-50%);text-align:right;line-height:1">' + esc(p.marker) + '</div>';
+    html += '<div style="position:absolute;right:6px;top:' + bY + '%;width:3px;height:3px;border-radius:50%;background:rgba(107,112,148,0.45);transform:translateY(-50%)"></div>';
+    html += '<div style="position:absolute;right:13px;top:' + lY + '%;font-size:10.5px;color:var(--text2);white-space:nowrap;transform:translateY(-50%);line-height:1">' +
+      esc(p.marker) + tick + '</div>';
   });
   html += '</div>';
 
-  // Lanes are a fixed width so the figure keeps a blot's proportions instead of
-  // stretching a band across the whole panel on a wide screen.
-  html += '<div style="display:flex;gap:10px;">';
-  ['Control', drugLabel.substring(0, 14)].forEach(function(lbl, li) {
-    html += '<div style="width:132px;display:flex;flex-direction:column;align-items:center;">';
-    html += '<div style="font-size:10px;color:var(--text2);height:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap">' + esc(lbl) + '</div>';
-    html += '<div style="width:100%;background:#010204;border:1px solid #0d0f1a;position:relative;height:' + GH + 'px;">';
+  html += '<div style="display:flex;gap:12px;">';
+  ['Untreated', drugLabel.substring(0, 16)].forEach(function(lbl, li) {
+    html += '<div style="width:136px;display:flex;flex-direction:column;align-items:center;">';
+    html += '<div style="font-size:11px;color:var(--text2);height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap">' + esc(lbl) + '</div>';
+    html += '<div style="width:100%;background:#08090e;border:1px solid #161a2b;border-radius:2px;position:relative;height:' + GH + 'px;">';
     LADDER.forEach(function(mw) {
-      html += '<div style="position:absolute;top:' + mw2y(mw) + '%;left:0;right:0;height:1px;background:rgba(255,255,255,0.03)"></div>';
+      html += '<div style="position:absolute;top:' + mw2y(mw) + '%;left:0;right:0;height:1px;background:rgba(255,255,255,0.028)"></div>';
     });
-    html += '<div style="position:absolute;top:85%;left:0;right:0;height:1px;background:rgba(255,255,255,0.05)"></div>';
     all.forEach(function(p) {
       var isC = CTRL.indexOf(p.marker) >= 0;
-      var color = 'rgba(255,255,255,0.75)', h = 5, glow = '';
-      if (li === 1) {
-        var op = IM[p.intensity] || 0.4;
-        if (isC) color = 'rgba(255,255,255,0.85)';
-        else if (p.direction === 'up') { color = 'rgba(27,175,122,' + op + ')'; glow = 'box-shadow:0 0 8px rgba(27,175,122,' + (op * 0.45) + ');'; }
-        else if (p.direction === 'down') color = 'rgba(208,59,59,' + (op * 0.95) + ')';
-        else if (p.direction === 'none') color = 'rgba(255,255,255,0.18)';
-        else color = 'rgba(201,133,0,0.4)';
-        h = p.intensity === 'high' ? 7 : p.intensity === 'faint' ? 3 : 5;
-      }
-      html += '<div style="position:absolute;top:' + by(p) + '%;left:8px;right:8px;height:' + h + 'px;border-radius:1px;background:' + color + ';' + glow + 'transform:translateY(-50%)"></div>';
+      var lv = bandLevels(p, isC);
+      var a = li === 0 ? lv.ctrl : lv.treat;
+      if (a < 0.04) return; // below detection: no band drawn at all
+      var h = 4 + a * 3.4;
+      // Greyscale, soft-edged, the way a developed blot reads.
+      html += '<div style="position:absolute;top:' + by(p) + '%;left:9px;right:9px;height:' + h.toFixed(1) +
+        'px;border-radius:2px;background:rgba(236,241,250,' + a.toFixed(2) +
+        ');box-shadow:0 0 ' + (2 + a * 4).toFixed(1) + 'px rgba(236,241,250,' + (a * 0.32).toFixed(2) +
+        ');transform:translateY(-50%)"></div>';
     });
     html += '</div></div>';
   });
   html += '</div></div>';
 
-  html += '<div class="legend" style="margin-top:14px;padding-top:12px">' +
+  html += '<div class="legend" style="margin-top:16px;padding-top:13px">' +
+    '<span>Band darkness is relative abundance, not an absolute amount.</span>' +
     '<span><span class="sw" style="background:var(--dir-up)"></span>increased</span>' +
     '<span><span class="sw" style="background:var(--dir-down)"></span>decreased</span>' +
-    '<span><span class="sw" style="background:rgba(255,255,255,0.22)"></span>unchanged</span>' +
+    '<span><span class="sw" style="background:var(--dir-none)"></span>unchanged</span>' +
     '<span><span class="sw" style="background:var(--dir-unknown)"></span>unclear</span>' +
-    '<span style="color:var(--text3)">Band height follows reported intensity; position follows molecular weight.</span>' +
-    '</div></div>';
+    '</div>';
+  html += '<div class="gel-note">A cleavage product such as cleaved caspase-3 or cleaved PARP is produced by the treatment, ' +
+    'so the untreated lane is drawn blank rather than with a full band. Phospho-epitopes are drawn with a low basal signal. ' +
+    'Loading controls are fixed in both lanes.</div>';
+  html += '</div>';
   document.getElementById('gelOut').innerHTML = html;
 }
 
@@ -9249,9 +9127,7 @@ function withCitations(s) {
 }
 
 function renderTable(preds) {
-  var html = '<table class="pred-table"><thead><tr>' +
-    '<th>Marker</th><th>Direction</th><th>Intensity</th><th>Confidence</th><th>Evidence</th>' +
-    '</tr></thead><tbody>';
+  var html = '<div class="cards">';
 
   preds.forEach(function(p) {
     // Loading controls are pinned regardless of what the model returned.
@@ -9268,43 +9144,43 @@ function renderTable(preds) {
     var dir = ['up', 'down', 'none', 'unknown'].indexOf(p.direction) >= 0 ? p.direction : 'none';
     var conf = Math.max(0, Math.min(100, p.confidence || 0));
     var level = p.evidenceLevel || EV.mechanism;
-    var tier = evidenceTier(level);
 
-    html += '<tr class="pred-row">' +
-      '<td class="pred-marker">' + esc(p.marker) + '</td>' +
-      '<td><span class="dir ' + dir + '"><i>' + DIR_GLYPH[dir] + '</i>' + DIR_WORD[dir] + '</span></td>' +
-      '<td class="intensity">' + esc(p.intensity || '—') + '</td>' +
-      '<td><span class="meter-wrap"><span class="meter"><span style="width:' + conf + '%"></span></span>' +
-      '<span class="meter-val">' + conf + '</span></span></td>' +
-      '<td><span class="tier ' + tier + '">' + esc(level) + '</span></td>' +
-      '</tr>';
+    html += '<div class="card">' +
+      '<div class="card-head">' +
+      '<span class="card-name">' + esc(p.marker) + '</span>' +
+      '<span class="dir ' + dir + '"><i>' + DIR_GLYPH[dir] + '</i>' + DIR_WORD[dir] + '</span>' +
+      (p.intensity ? '<span class="intensity">' + esc(p.intensity) + '</span>' : '') +
+      '<span class="card-meta">' +
+      '<span class="meter-wrap"><span class="meter-cap">confidence</span>' +
+      '<span class="meter"><span style="width:' + conf + '%"></span></span>' +
+      '<span class="meter-val">' + conf + '</span></span>' +
+      '<span class="tier ' + evidenceTier(level) + '">' + esc(level) + '</span>' +
+      '</span></div>';
 
-    // Full reasoning, spanning every column. Nothing is clipped here.
-    html += '<tr class="pred-detail"><td colspan="5">';
+    // Full reasoning. Nothing is clipped.
+    html += '<div class="card-body">';
     if (p.wb_data_found) {
       html += '<div class="chain cited"><div class="chain-label">Published result</div>' + withCitations(p.wb_data_found) + '</div>';
     }
     if (p.signaling_chain) {
-      html += '<div class="chain"><div class="chain-label">Signaling chain</div>' + withCitations(p.signaling_chain) + '</div>';
+      html += '<div class="chain">' + withCitations(p.signaling_chain) + '</div>';
     }
     if (p.mechanism && p.mechanism !== p.signaling_chain) {
-      html += '<div class="chain"><div class="chain-label">Mechanism</div>' + withCitations(p.mechanism) + '</div>';
+      html += '<div class="chain">' + withCitations(p.mechanism) + '</div>';
     }
     if (!p.wb_data_found && !p.signaling_chain && !p.mechanism) {
       html += '<div class="chain" style="color:var(--text3)">No reasoning returned for this marker.</div>';
     }
     if (p.voteNote) html += '<div class="vote-note">' + esc(p.voteNote) + '</div>';
-    html += '</td></tr>';
+    html += '</div></div>';
   });
 
-  html += '</tbody></table>' +
-    '<div class="legend">' +
-    '<span><span class="sw" style="background:var(--dir-up)"></span>▲ increased</span>' +
-    '<span><span class="sw" style="background:var(--dir-down)"></span>▼ decreased</span>' +
-    '<span><span class="sw" style="background:var(--dir-none)"></span>■ unchanged</span>' +
-    '<span><span class="sw" style="background:var(--dir-unknown)"></span>◆ unclear</span>' +
-    '<span style="color:var(--text3)">Confidence is the estimated probability of this direction. ' +
-    'The evidence tag states what it rests on.</span>' +
+  html += '</div><div class="legend">' +
+    '<span><span class="sw" style="background:var(--dir-up)"></span>increased</span>' +
+    '<span><span class="sw" style="background:var(--dir-down)"></span>decreased</span>' +
+    '<span><span class="sw" style="background:var(--dir-none)"></span>unchanged</span>' +
+    '<span><span class="sw" style="background:var(--dir-unknown)"></span>unclear</span>' +
+    '<span style="color:var(--text3)">Confidence is the estimated probability of this direction, not how sure the wording sounds.</span>' +
     '</div>';
   document.getElementById('tableOut').innerHTML = html;
 }
@@ -9452,7 +9328,7 @@ async function runAnalysis() {
 
   resetKnownIds();
   document.getElementById('runBtn').disabled = true;
-  ['gelOut', 'debateOut', 'tableOut', 'pathwayOut'].forEach(function(id) {
+  ['gelOut', 'debateOut', 'tableOut', 'pathwayOut', 'validationOut'].forEach(function(id) {
     document.getElementById(id).innerHTML = '<div class="empty"><div class="spinner"></div></div>';
   });
 
@@ -9889,22 +9765,40 @@ async function runAnalysis() {
       pHtml += '</div>';
     });
 
-    if (validations.length) {
-      pHtml += '<div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">' +
-        '<div style="font-size:9px;letter-spacing:0.2em;color:var(--purple);margin-bottom:10px">SUGGESTED VALIDATION EXPERIMENTS</div>';
-      validations.forEach(function(v, i) {
-        pHtml += '<div style="font-size:11px;color:var(--muted2);padding:5px 0;border-bottom:1px solid var(--border)">' + (i + 1) + '. ' + withCitations(v) + '</div>';
-      });
-      pHtml += '</div>';
-    }
     document.getElementById('pathwayOut').innerHTML = pHtml || '<div class="empty"><span>No mechanism data</span></div>';
+
+    // ── Next experiments ──
+    var vHtml = '';
+    if (validations.length) {
+      vHtml += '<p class="lede">Experiments that would settle the calls this run is least sure about.</p>';
+      validations.forEach(function(v, i) {
+        vHtml += '<div class="exp"><span class="exp-n">' + (i + 1) + '</span>' +
+          '<span class="exp-t">' + withCitations(v) + '</span></div>';
+      });
+    }
+    // Markers the run could not ground are the obvious things to check first.
+    var weak = preds.filter(function(p) {
+      return HOUSEKEEPING.indexOf(p.marker) < 0 &&
+        ((p.confidence || 0) < 40 || p.evidenceLevel === EV.none);
+    });
+    if (weak.length) {
+      vHtml += '<div class="exp-group"><div class="exp-group-t">Weakest calls — confirm these before relying on them</div>';
+      weak.forEach(function(p) {
+        var d = ['up', 'down', 'none', 'unknown'].indexOf(p.direction) >= 0 ? p.direction : 'none';
+        vHtml += '<div class="exp-weak"><span class="dir ' + d + '"><i>' + DIR_GLYPH[d] + '</i>' + esc(p.marker) + '</span>' +
+          '<span class="exp-weak-m">' + (p.confidence || 0) + ' · ' + esc(p.evidenceLevel || '') + '</span></div>';
+      });
+      vHtml += '</div>';
+    }
+    document.getElementById('validationOut').innerHTML = vHtml ||
+      '<div class="empty"><span>No suggestions returned</span></div>';
 
     setStatus('done', 'Done — ' + litCount + ' papers (' + pmcCount + ' full text), ' + preds.length + ' markers');
     showTab('table');
 
   } catch (e) {
     setStatus('error', 'Error: ' + e.message);
-    ['gelOut', 'debateOut', 'tableOut', 'pathwayOut'].forEach(function(id) {
+    ['gelOut', 'debateOut', 'tableOut', 'pathwayOut', 'validationOut'].forEach(function(id) {
       document.getElementById(id).innerHTML = '<div class="empty" style="color:var(--orange)"><span>⚠ ' + e.message + '</span></div>';
     });
   } finally {
