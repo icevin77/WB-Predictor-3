@@ -61,9 +61,10 @@ function parseJSON(text) {
 async function runWithoutDB(client, c) {
   const user =
     `Cell line: ${c.cell}\nDrug: ${c.drug}\nConcentration: ${c.conc_uM} uM\n` +
-    `Treatment time: ${c.time_h} h\nConditions: standard\nMarkers: ${c.marker}\n` +
+    `Treatment time: ${c.time_h} h\nConditions: ${c.condition || 'standard'}\nMarkers: ${c.marker}\n` +
     `Mode: known drug` +
     `\n\n[Instructions]\n1. Predict this one marker only.\n` +
+    (c.condition ? `   The comparison is "${c.condition}" — predict the change under that comparison, not versus untreated cells.\n` : '') +
     `2. Apply cell line deficiencies without exception.\n` +
     `3. Write a signaling_chain.\n` +
     `4. Compare the published dose and timepoint against the input; the larger the gap, the lower the confidence.`;

@@ -149,7 +149,9 @@ globalThis.WB_CALIBRATION = (function () {
     return Math.round(100 / (1 + Math.exp(-z)));
   }
 
-  return { calibrate: calibrate, weights: W, bias: B };
+  // The app only uses these weights when this flag is set, so a placeholder
+  // file cannot be mistaken for a fitted one.
+  return { fitted: true, calibrate: calibrate, weights: W, bias: B };
 }());
 `, 'utf8');
 
