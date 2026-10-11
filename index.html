@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WB Predictor — Novel Drug Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:       #07080f;
@@ -24,7 +24,8 @@
   --text3:    #475569;
   --mono:     'IBM Plex Mono', monospace;
   --sans:     'Inter', sans-serif;
-  --serif:    'Fraunces', serif;
+  /* Two faces only: Inter for anything read as language, IBM Plex Mono for
+     identifiers, counts and labels. Nothing else. */
 
   /* Direction encoding. Diverging pair with a neutral midpoint, stepped for
      this surface and validated as a set: worst pair ΔE 9.9 under deuteranopia
@@ -81,7 +82,7 @@ body::after {
   flex-wrap: wrap;
 }
 .logo-mark { font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent); font-weight: 500; }
-.logo-sub { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--text3); font-weight: 300; }
+.logo-sub { font-size: 12px; color: var(--text3); font-weight: 400; }
 .version-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--text3); border: 1px solid var(--border2); padding: 3px 9px; border-radius: 3px; }
 .main-layout { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 52px); }
 .sidebar { border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; background: var(--surface); scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
@@ -182,6 +183,14 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .chain + .chain { margin-top: 10px; }
 .chain.cited { color: rgba(226,232,240,0.88); border-left: 2px solid rgba(27,175,122,0.5); padding-left: 11px; }
 .vote-note { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 8px; letter-spacing: 0.02em; }
+.method-fig { margin: 0 0 26px; }
+.method-fig svg { width: 100%; max-width: 1160px; height: auto; color: var(--text); display: block; }
+.method-fig figcaption { font-size: 12px; line-height: 1.8; color: var(--text2); max-width: 92ch; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+.method-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.method-note { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; font-size: 12px; line-height: 1.8; color: var(--text2); }
+.cite { font-family: var(--mono); font-size: 10px; color: var(--tier-analogous); text-decoration: none; border-bottom: 1px solid rgba(96,165,250,0.35); }
+.cite:hover { border-bottom-color: var(--tier-analogous); }
+.prose { font-size: 12.5px; line-height: 1.8; color: rgba(226,232,240,0.88); max-width: 92ch; }
 .legend { display: flex; gap: 18px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--text2); flex-wrap: wrap; align-items: center; }
 .legend b { font-weight: 500; color: var(--text); }
 .legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
@@ -199,9 +208,9 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 @keyframes rise { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 .round-tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
 .tag-a { color: var(--accent); } .tag-b { color: var(--orange); } .tag-j { color: var(--purple); }
-.bubble { font-family: var(--serif); font-size: 14px; line-height: 1.85; padding: 14px 18px; border-left: 2px solid; background: rgba(255,255,255,0.018); color: rgba(226,232,240,0.9); border-radius: 0 5px 5px 0; }
+.bubble { font-size: 12.5px; line-height: 1.8; padding: 13px 16px; border-left: 2px solid; background: rgba(255,255,255,0.018); color: rgba(226,232,240,0.9); border-radius: 0 5px 5px 0; max-width: 92ch; }
 .bubble.a { border-color: var(--accent); } .bubble.b { border-color: var(--orange); } .bubble.j { border-color: var(--purple); background: rgba(167,139,250,0.04); }
-.pathway-summary { font-family: var(--serif); font-size: 15px; line-height: 1.9; font-style: italic; color: rgba(226,232,240,0.85); padding: 16px 20px; border-left: 2px solid var(--purple); background: rgba(167,139,250,0.04); margin-bottom: 24px; border-radius: 0 6px 6px 0; }
+.pathway-summary { font-size: 13px; line-height: 1.8; color: rgba(226,232,240,0.9); padding: 14px 18px; border-left: 2px solid var(--tier-inferred); background: rgba(167,139,250,0.05); margin-bottom: 22px; border-radius: 0 6px 6px 0; max-width: 92ch; }
 .mech-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 .mech-item:last-child { border-bottom: none; }
 .mech-head { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; flex-wrap: wrap; }
@@ -209,7 +218,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
 .mech-conf { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-left: auto; font-variant-numeric: tabular-nums; }
 .mech-text { font-size: 12px; line-height: 1.75; color: var(--text2); max-width: 86ch; margin-top: 9px; }
 .no-data { background: rgba(251,146,60,0.05); border: 1px dashed rgba(251,146,60,0.25); padding: 12px 16px; font-size: 11px; color: rgba(251,146,60,0.75); line-height: 1.7; margin-bottom: 18px; border-radius: 5px; }
-.empty { display: flex; align-items: center; justify-content: center; min-height: 280px; color: var(--text3); font-size: 13px; font-family: var(--serif); font-style: italic; }
+.empty { display: flex; align-items: center; justify-content: center; min-height: 280px; color: var(--text3); font-size: 12.5px; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -380,6 +389,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
       <button class="tab" onclick="showTab('gel')">Western blot</button>
       <button class="tab" onclick="showTab('debate')">AI debate</button>
       <button class="tab" onclick="showTab('pathway')">Signaling mechanism</button>
+      <button class="tab" onclick="showTab('method')">Method</button>
     </div>
     <div class="tab-body">
       <div class="tc active" id="tc-table"><div id="tableOut"><div class="empty"><span>No predictions yet</span></div></div></div>
@@ -389,6 +399,150 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
       </div>
       <div class="tc" id="tc-debate"><div id="debateOut"><div class="empty"><span>Awaiting AI debate</span></div></div></div>
       <div class="tc" id="tc-pathway"><div id="pathwayOut"><div class="empty"><span>No mechanism analysis</span></div></div></div>
+      <div class="tc" id="tc-method">
+        <figure class="method-fig">
+        <svg viewBox="0 0 1160 980" role="img" width="100%"
+             aria-label="Pipeline of the western blot predictor: one query fans out to the embedded blot database and to external compound, cell line, literature and omics sources; the results are assembled into a priority-ordered corpus, sent through a server-side function to the model, then corrected by multi-source voting, condition matching, loading-control pinning and a citation filter before reaching the four result tabs.">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g fill="currentColor" font-size="12.5">
+
+            <!-- 1. Input -->
+            <text x="40" y="26" font-size="10.5" letter-spacing="1.8" opacity=".55">01 · QUERY</text>
+            <rect x="40" y="36" width="1080" height="52" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="60" y="67">Cell line · drug name, or SMILES plus a proposed target · concentration · treatment time · marker panel</text>
+
+            <line x1="580" y1="88" x2="580" y2="122" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
+
+            <!-- 2. Retrieval -->
+            <text x="40" y="146" font-size="10.5" letter-spacing="1.8" opacity=".55">02 · RETRIEVAL &#8212; IN PARALLEL, EACH SOURCE MAY FAIL WITHOUT STOPPING THE RUN</text>
+            <rect x="40" y="158" width="330" height="172" rx="6" fill="#1baf7a" fill-opacity=".07" stroke="#1baf7a" stroke-opacity=".55"/>
+            <text x="60" y="184" font-size="12.5" font-weight="600" fill="#1baf7a">Embedded blot database</text>
+            <text x="60" y="206" opacity=".82">7,824 rows extracted from papers</text>
+            <text x="60" y="228" opacity=".82">exact &#8212; same drug + same cell line</text>
+            <text x="60" y="250" opacity=".82">analogous &#8212; same drug, other lines</text>
+            <text x="60" y="272" opacity=".82">condition score from dose and time</text>
+            <text x="60" y="305" font-size="11" opacity=".6">offline, instant, no network needed</text>
+
+            <rect x="396" y="158" width="330" height="172" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="416" y="184" font-size="12.5" font-weight="600" fill="#60a5fa">Compound and cell line</text>
+            <text x="416" y="206" opacity=".82">PubChem &#8212; formula, SMILES, pharmacology</text>
+            <text x="416" y="228" opacity=".82">Cellosaurus &#8212; disease, sequence variants</text>
+            <text x="416" y="250" opacity=".82">built-in notes for lines it cannot resolve</text>
+            <text x="416" y="272" opacity=".82">e.g. MCF-7 is CASP3-null</text>
+            <text x="416" y="305" font-size="11" opacity=".6">a deficient marker can never be called changed</text>
+
+            <rect x="752" y="158" width="368" height="172" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="772" y="184" font-size="12.5" font-weight="600" fill="#60a5fa">Literature and omics</text>
+            <text x="772" y="206" opacity=".82">Semantic Scholar &#8594; PMC full text</text>
+            <text x="772" y="228" opacity=".82">PubMed &#8212; indirect search, per marker</text>
+            <text x="772" y="250" opacity=".82">UniProt &#8212; protein function and pathway</text>
+            <text x="772" y="272" opacity=".82">LINCS L1000 · cBioPortal</text>
+            <text x="772" y="305" font-size="11" opacity=".6">hard deadline: 20s, then 25s</text>
+
+            <line x1="205" y1="330" x2="205" y2="372" stroke="#1baf7a" stroke-opacity=".75" marker-end="url(#ar)"/>
+            <line x1="561" y1="330" x2="561" y2="372" stroke="currentColor" stroke-opacity=".4" marker-end="url(#ar)"/>
+            <line x1="936" y1="330" x2="936" y2="372" stroke="currentColor" stroke-opacity=".4" marker-end="url(#ar)"/>
+            <text x="215" y="356" font-size="11" fill="#1baf7a" opacity=".95">placed first</text>
+
+            <!-- 3. Corpus -->
+            <text x="40" y="398" font-size="10.5" letter-spacing="1.8" opacity=".55">03 · CORPUS, ORDERED BY HOW DIRECT THE EVIDENCE IS</text>
+            <rect x="40" y="410" width="1080" height="92" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="60" y="440" font-size="11.5" fill="#1baf7a">1 · database, exact</text>
+            <text x="245" y="440" font-size="11.5" fill="#1baf7a" opacity=".75">2 · database, analogous</text>
+            <text x="455" y="440" font-size="11.5" opacity=".8">3 · papers</text>
+            <text x="610" y="440" font-size="11.5" opacity=".8">4 · marker protein data</text>
+            <text x="830" y="440" font-size="11.5" opacity=".8">5 · LINCS, cBioPortal</text>
+            <text x="60" y="476" font-size="11.5" opacity=".62">Papers that actually mention a blot are given three times the prompt budget of those that do not. Omics data is adjustment material, never the basis for a call.</text>
+
+            <line x1="580" y1="502" x2="580" y2="540" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
+            <text x="592" y="526" font-size="11" opacity=".7">corpus + rules</text>
+
+            <!-- 4. Model -->
+            <text x="40" y="566" font-size="10.5" letter-spacing="1.8" opacity=".55">04 · PREDICTION</text>
+            <rect x="40" y="578" width="1080" height="96" rx="6" fill="#a78bfa" fill-opacity=".06" stroke="#a78bfa" stroke-opacity=".5"/>
+            <text x="62" y="610" font-size="12">Browser</text>
+            <line x1="130" y1="606" x2="196" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+            <text x="134" y="598" font-size="10" opacity=".6">no key</text>
+            <text x="210" y="610" font-family="monospace" font-size="12">/api/chat</text>
+            <line x1="300" y1="606" x2="366" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+            <text x="380" y="610" font-size="12">Vercel function</text>
+            <line x1="490" y1="606" x2="556" y2="606" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+            <text x="494" y="598" font-size="10" opacity=".6">+ key</text>
+            <text x="570" y="610" font-size="12" font-weight="600" fill="#a78bfa">Claude</text>
+            <text x="62" y="648" font-size="11.5" opacity=".72">Returns, per marker: direction · intensity · confidence · evidence level · signaling chain, plus a four-round debate and a pathway summary.</text>
+
+            <line x1="580" y1="674" x2="580" y2="712" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
+
+            <!-- 5. Correction -->
+            <text x="40" y="738" font-size="10.5" letter-spacing="1.8" opacity=".55">05 · CORRECTION &#8212; THE MODEL&#8217;S ANSWER IS NOT TAKEN AT FACE VALUE</text>
+            <rect x="40" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="58" y="776" font-size="12" font-weight="600">Weighted vote</text>
+            <text x="58" y="800" font-size="11.5" opacity=".8">database ×3</text>
+            <text x="58" y="822" font-size="11.5" opacity=".8">model ×2 · LINCS ×1</text>
+            <text x="58" y="850" font-size="11" opacity=".62">agreement moves</text>
+            <text x="58" y="868" font-size="11" opacity=".62">confidence by &#177;15</text>
+
+            <rect x="314" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="332" y="776" font-size="12" font-weight="600">Condition match</text>
+            <text x="332" y="800" font-size="11.5" opacity=".8">dose on a log scale</text>
+            <text x="332" y="822" font-size="11.5" opacity=".8">timepoint distance</text>
+            <text x="332" y="850" font-size="11" opacity=".62">a result at 100× the dose</text>
+            <text x="332" y="868" font-size="11" opacity=".62">is worth less</text>
+
+            <rect x="588" y="750" width="258" height="132" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="606" y="776" font-size="12" font-weight="600">Controls pinned</text>
+            <text x="606" y="800" font-size="11.5" opacity=".8">&#946;-actin, GAPDH, tubulin</text>
+            <text x="606" y="822" font-size="11.5" opacity=".8">forced to unchanged</text>
+            <text x="606" y="850" font-size="11" opacity=".62">a loading control that</text>
+            <text x="606" y="868" font-size="11" opacity=".62">moves is a bug, not data</text>
+
+            <rect x="862" y="750" width="258" height="132" rx="6" fill="#c98500" fill-opacity=".07" stroke="#c98500" stroke-opacity=".5"/>
+            <text x="880" y="776" font-size="12" font-weight="600" fill="#c98500">Citation filter</text>
+            <text x="880" y="800" font-size="11.5" opacity=".8">keeps only identifiers</text>
+            <text x="880" y="822" font-size="11.5" opacity=".8">retrieved in this run</text>
+            <text x="880" y="850" font-size="11" opacity=".62">anything written from</text>
+            <text x="880" y="868" font-size="11" opacity=".62">memory is deleted</text>
+
+            <line x1="580" y1="882" x2="580" y2="918" stroke="currentColor" stroke-opacity=".45" marker-end="url(#ar)"/>
+
+            <!-- 6. Output -->
+            <rect x="40" y="930" width="1080" height="40" rx="6" fill="none" stroke="currentColor" stroke-opacity=".32"/>
+            <text x="60" y="956" font-size="12" opacity=".88">Predictions &#160;·&#160; blot simulation &#160;·&#160; debate and calibration &#160;·&#160; mechanism</text>
+          </g>
+        </svg>
+        <figcaption>
+          Every call is traceable to the tier of evidence behind it. The embedded database is consulted
+          first and weighted highest; the model never sets a direction from omics data alone; loading
+          controls are pinned rather than predicted; and an article identifier is shown only when this
+          run actually retrieved that record.
+        </figcaption>
+        </figure>
+
+        <div class="method-notes">
+          <div class="method-note">
+            <div class="chain-label">Why the database comes first</div>
+            A row in the embedded database is a blot someone already ran and published. It outranks
+            anything the model can reason its way to, so those rows are placed at the top of the corpus,
+            labelled as the highest priority, and given three votes in the final tally.
+          </div>
+          <div class="method-note">
+            <div class="chain-label">What confidence means</div>
+            The estimated probability that the marker moves in the stated direction &#8212; not how sure the
+            model sounds. A clear mechanism can score high with no paper behind it; a paper run at a very
+            different dose or timepoint scores lower than its directness suggests.
+          </div>
+          <div class="method-note">
+            <div class="chain-label">What it cannot do</div>
+            It predicts from published results and signaling logic, never from experiment. Novel compounds
+            are inferred from structural analogues plus a proposed target and carry the most uncertainty.
+            Treat every call as a hypothesis to test at the bench.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -8610,7 +8764,7 @@ function getMarkers() {
 }
 
 function showTab(n) {
-  const ns = ['table', 'gel', 'debate', 'pathway'];
+  const ns = ['table', 'gel', 'debate', 'pathway', 'method'];
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ns[i] === n));
   document.querySelectorAll('.tc').forEach(c => c.classList.remove('active'));
   document.getElementById('tc-' + n).classList.add('active');
@@ -8917,7 +9071,7 @@ function mw2y(mw) {
 // Fallback notes for cell lines Cellosaurus does not resolve. The deficiencies
 // matter: a marker the line cannot express must never be predicted to change.
 var CL_QUIRKS = {
-  'MCF-7':      { deficient: { 'cleaved Caspase-3': 'MCF-7 is CASP3-deficient - cleaved Casp3 is not detectable (Janicke et al., Cancer Res 1998, PMID:9823396)' }, notes: 'ER+ breast cancer, wild-type p53, caspase-3 deficient' },
+  'MCF-7':      { deficient: { 'cleaved Caspase-3': 'MCF-7 is CASP3-deficient - cleaved Casp3 is not detectable (Janicke et al., Cancer Res 1998)' }, notes: 'ER+ breast cancer, wild-type p53, caspase-3 deficient' },
   'PC-3':       { deficient: {}, notes: 'p53 null, PTEN null' },
   'NCI-H1299':  { deficient: { 'p53': 'p53 null', 'p-p53(Ser15)': 'p53 null' }, notes: 'p53 homozygous deletion' },
   'MDA-MB-231': { deficient: {}, notes: 'TNBC, mutant p53 R280K, KRAS G13D' },
@@ -9044,6 +9198,56 @@ function esc(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// ── Citations ──
+// The model writes article identifiers from memory, and those are frequently
+// wrong. Only identifiers this run actually retrieved — from the embedded
+// database or from a search that returned the record — are trustworthy, so
+// those are collected here and everything else is deleted rather than shown.
+var KNOWN_IDS = { pmid: new Set(), pmcid: new Set() };
+
+function resetKnownIds() {
+  KNOWN_IDS = { pmid: new Set(), pmcid: new Set() };
+}
+
+function rememberIds(dbResult, papers) {
+  if (dbResult) {
+    [].concat(dbResult.exact || [], dbResult.drugOnly || []).forEach(function(r) {
+      if (r.pmcid) KNOWN_IDS.pmcid.add(String(r.pmcid).replace(/^PMC/i, ''));
+    });
+  }
+  (papers || []).forEach(function(p) {
+    if (p.pmid) KNOWN_IDS.pmid.add(String(p.pmid));
+    if (p.pmcid) KNOWN_IDS.pmcid.add(String(p.pmcid).replace(/^PMC/i, ''));
+  });
+}
+
+function pmcLink(id) {
+  return '<a class="cite" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC' + id +
+    '/" target="_blank" rel="noopener">PMC' + id + '</a>';
+}
+
+// Escape, then turn verified identifiers into links and drop unverified ones.
+function withCitations(s) {
+  var out = esc(s);
+  out = out.replace(/\bPMC\s*:?\s*(\d{4,9})\b/gi, function(m, id) {
+    return KNOWN_IDS.pmcid.has(id) ? pmcLink(id) : '';
+  });
+  out = out.replace(/\bPMID\s*:?\s*(\d{4,9})\b/gi, function(m, id) {
+    return KNOWN_IDS.pmid.has(id)
+      ? '<a class="cite" href="https://pubmed.ncbi.nlm.nih.gov/' + id +
+        '/" target="_blank" rel="noopener">PMID ' + id + '</a>'
+      : '';
+  });
+  // Tidy the punctuation a removed identifier leaves behind.
+  return out
+    .replace(/\(\s*[|,;·\-]*\s*\)/g, '')
+    .replace(/\[\s*[|,;·\-]*\s*\]/g, '')
+    .replace(/\s*([|·])\s*(?=[|·\])]|$)/g, '')
+    .replace(/\s+([,.;])/g, '$1')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function renderTable(preds) {
   var html = '<table class="pred-table"><thead><tr>' +
     '<th>Marker</th><th>Direction</th><th>Intensity</th><th>Confidence</th><th>Evidence</th>' +
@@ -9078,13 +9282,13 @@ function renderTable(preds) {
     // Full reasoning, spanning every column. Nothing is clipped here.
     html += '<tr class="pred-detail"><td colspan="5">';
     if (p.wb_data_found) {
-      html += '<div class="chain cited"><div class="chain-label">Published result</div>' + esc(p.wb_data_found) + '</div>';
+      html += '<div class="chain cited"><div class="chain-label">Published result</div>' + withCitations(p.wb_data_found) + '</div>';
     }
     if (p.signaling_chain) {
-      html += '<div class="chain"><div class="chain-label">Signaling chain</div>' + esc(p.signaling_chain) + '</div>';
+      html += '<div class="chain"><div class="chain-label">Signaling chain</div>' + withCitations(p.signaling_chain) + '</div>';
     }
     if (p.mechanism && p.mechanism !== p.signaling_chain) {
-      html += '<div class="chain"><div class="chain-label">Mechanism</div>' + esc(p.mechanism) + '</div>';
+      html += '<div class="chain"><div class="chain-label">Mechanism</div>' + withCitations(p.mechanism) + '</div>';
     }
     if (!p.wb_data_found && !p.signaling_chain && !p.mechanism) {
       html += '<div class="chain" style="color:var(--text3)">No reasoning returned for this marker.</div>';
@@ -9190,7 +9394,11 @@ function buildSystemPrompt() {
     '- Write the whole object on one line.',
     '- No trailing commas.',
     '',
-    'citations format: "Author et al., Journal Year PMID:number"',
+    '[Citations]',
+    'Never write an article identifier from memory. Cite a PMID or PMC id only if that exact',
+    'identifier appears in the corpus above. If you have no identifier from the corpus, describe',
+    'the finding without one. Identifiers that cannot be verified against the retrieved sources',
+    'are deleted before the result is displayed, so an invented one is wasted output.',
     '',
     'Return only this JSON:',
     '{"pubchem_cid":null,"cellosaurus_ac":null,"cell_line_quirks_applied":[],"literature_found":0,"pmc_fulltext_count":0,"lincs_found":false,"cbioportal_gene":null,"db_exact_hits":0,"drug_analysis":"","cell_line_analysis":"","predictions":[{"marker":"","direction":"up","intensity":"medium","confidence":50,"evidenceLevel":"' + EV.mechanism + '","citations":[],"wb_data_found":null,"signaling_chain":"","mechanism":""}],"pathway_summary":"","debate":{"ai_a_claim":"","ai_b_attack":"","ai_a_counter":"","ai_b_final":"","consensus":""},"no_data_markers":[],"validation_suggestions":[]}'
@@ -9242,6 +9450,7 @@ async function runAnalysis() {
   if (!cellLine) { alert('Select a cell line.'); return; }
   if (!markers.length) { alert('Select at least one marker.'); return; }
 
+  resetKnownIds();
   document.getElementById('runBtn').disabled = true;
   ['gelOut', 'debateOut', 'tableOut', 'pathwayOut'].forEach(function(id) {
     document.getElementById(id).innerHTML = '<div class="empty"><div class="spinner"></div></div>';
@@ -9355,6 +9564,8 @@ async function runAnalysis() {
     var enriched = phase2[0], markerInfos = phase2[1], extraPMC = phase2[2];
     var papers = enriched.concat(extraPMC).filter(function(p){ return p.fullText && p.fullText.length > 80; });
     var pmcCount = papers.filter(function(p){ return p.pmcid; }).length;
+    // Everything retrieved this run. Identifiers outside this set get stripped.
+    rememberIds(dbResult, papers);
     var quirks = getQuirks(cellLine);
 
     // Assemble the corpus.
@@ -9546,7 +9757,7 @@ async function runAnalysis() {
           condTag +
           ' <span style="color:var(--muted);font-size:9px">| ' + r.cell +
           (r.conc_uM ? ' ' + r.conc_uM + 'μM' : '') + (r.time_h ? ' ' + r.time_h + 'h' : '') +
-          ' PMC' + r.pmcid + '</span><br>';
+          ' </span>' + pmcLink(r.pmcid) + '<br>';
       });
       dHtml += '</div></div>';
     }
@@ -9586,7 +9797,7 @@ async function runAnalysis() {
       dbDrugRows.slice(0, 20).forEach(function(r) {
         dHtml += '<span style="color:var(--muted2)">' + r.marker + '</span> ' +
           '<strong style="color:' + dirColorOf(r.direction) + '">' + arrow(r.direction) + '</strong>' +
-          ' <span style="color:var(--muted);font-size:9px">| ' + r.cell + ' PMC' + r.pmcid + '</span><br>';
+          ' <span style="color:var(--text3);font-size:10px">| ' + esc(r.cell) + ' </span>' + pmcLink(r.pmcid) + '<br>';
       });
       dHtml += '</div></div>';
     }
@@ -9628,9 +9839,9 @@ async function runAnalysis() {
     }
 
     if (parsed.drug_analysis) {
-      dHtml += '<div class="panel" style="border-left:2px solid var(--tier-analogous);font-family:Fraunces,serif;font-size:13.5px;line-height:1.8;color:rgba(226,232,240,0.88);margin-bottom:16px">' +
+      dHtml += '<div class="panel prose" style="border-left:2px solid var(--tier-analogous);margin-bottom:16px">' +
         '<div class="panel-label" style="color:var(--tier-analogous)">Drug analysis</div>' +
-        parsed.drug_analysis + '</div>';
+        withCitations(parsed.drug_analysis) + '</div>';
     }
 
     if (debate.ai_a_claim) {
@@ -9640,7 +9851,7 @@ async function runAnalysis() {
        ['AI-B', 'b', 'var(--orange)', debate.ai_b_final, 'closing'],
        ['⚖ Consensus', 'j', 'var(--purple)', debate.consensus, '']].forEach(function(r) {
         dHtml += '<div class="debate-round"><div class="round-tag"><span style="color:' + r[2] + '">' + r[0] + '</span> ' + r[4] + '</div>' +
-          '<div class="bubble ' + r[1] + '">' + r[3] + '</div></div>';
+          '<div class="bubble ' + r[1] + '">' + withCitations(r[3]) + '</div></div>';
       });
     }
     document.getElementById('debateOut').innerHTML = dHtml;
@@ -9650,10 +9861,10 @@ async function runAnalysis() {
     if (parsed.cell_line_analysis) {
       pHtml += '<div class="panel" style="border-left:2px solid var(--tier-analogous);margin-bottom:18px">' +
         '<div class="panel-label" style="color:var(--tier-analogous)">Cell line genetic background</div>' +
-        '<div style="font-family:Fraunces,serif;font-size:13.5px;line-height:1.8;color:rgba(221,225,240,0.9)">' + parsed.cell_line_analysis + '</div></div>';
+        '<div class="prose">' + withCitations(parsed.cell_line_analysis) + '</div></div>';
     }
     if (parsed.pathway_summary) {
-      pHtml += '<div class="pathway-summary">' + parsed.pathway_summary + '</div>';
+      pHtml += '<div class="pathway-summary">' + withCitations(parsed.pathway_summary) + '</div>';
     }
 
     preds.filter(function(p){ return p.signaling_chain || p.mechanism; }).forEach(function(p) {
@@ -9669,12 +9880,12 @@ async function runAnalysis() {
         '<span class="mech-conf">confidence ' + (p.confidence || 0) + '</span></div>';
       if (p.wb_data_found) {
         pHtml += '<div style="border-left:2px solid rgba(27,175,122,0.5);padding:4px 0 4px 11px;margin-bottom:9px;font-size:12px;color:rgba(226,232,240,0.88);line-height:1.7">' +
-          '<div class="chain-label">Published WB result</div>' + esc(p.wb_data_found) + '</div>';
+          '<div class="chain-label">Published WB result</div>' + withCitations(p.wb_data_found) + '</div>';
       }
       if (p.signaling_chain) {
-        pHtml += '<div class="chain"><div class="chain-label">Signaling chain</div>' + esc(p.signaling_chain) + '</div>';
+        pHtml += '<div class="chain"><div class="chain-label">Signaling chain</div>' + withCitations(p.signaling_chain) + '</div>';
       }
-      if (p.mechanism) pHtml += '<div class="mech-text">' + esc(p.mechanism) + '</div>';
+      if (p.mechanism) pHtml += '<div class="mech-text">' + withCitations(p.mechanism) + '</div>';
       pHtml += '</div>';
     });
 
@@ -9682,7 +9893,7 @@ async function runAnalysis() {
       pHtml += '<div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">' +
         '<div style="font-size:9px;letter-spacing:0.2em;color:var(--purple);margin-bottom:10px">SUGGESTED VALIDATION EXPERIMENTS</div>';
       validations.forEach(function(v, i) {
-        pHtml += '<div style="font-size:11px;color:var(--muted2);padding:5px 0;border-bottom:1px solid var(--border)">' + (i + 1) + '. ' + v + '</div>';
+        pHtml += '<div style="font-size:11px;color:var(--muted2);padding:5px 0;border-bottom:1px solid var(--border)">' + (i + 1) + '. ' + withCitations(v) + '</div>';
       });
       pHtml += '</div>';
     }
