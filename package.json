@@ -1,0 +1,16 @@
+{
+  "name": "wb-predictor",
+  "version": "5.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Western blot predictor with an embedded literature database",
+  "scripts": {
+    "translate-db": "node scripts/translate-db.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
