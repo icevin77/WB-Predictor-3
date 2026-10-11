@@ -12,7 +12,18 @@ const ALLOWED_MODELS = new Set([
 const DEFAULT_MODEL = 'claude-sonnet-5-5';
 const MAX_TOKENS_CAP = 16000;
 
-const client = new Anthropic();
+// Pasting a name into a dashboard field easily leaves a stray space on it, which
+// makes process.env.ANTHROPIC_API_KEY undefined while the variable looks right in
+// the UI. Fall back to matching names by their trimmed form, and trim the value
+// too, so that mistake does not take the whole endpoint down.
+export function resolveApiKey(env = process.env) {
+  const direct = env.ANTHROPIC_API_KEY;
+  if (direct && direct.trim()) return direct.trim();
+  for (const [name, value] of Object.entries(env)) {
+    if (name.trim() === 'ANTHROPIC_API_KEY' && value && value.trim()) return value.trim();
+  }
+  return null;
+}
 
 function fail(res, status, message) {
   return res.status(status).json({ error: { message } });
@@ -23,8 +34,15 @@ export default async function handler(req, res) {
     res.setHeader('Allow', 'POST');
     return fail(res, 405, 'Method not allowed');
   }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return fail(res, 500, 'ANTHROPIC_API_KEY is not set on the server');
+
+  const apiKey = resolveApiKey();
+  if (!apiKey) {
+    // Name the environment, because a variable set only for Production looks
+    // present in the dashboard while a preview deployment still has nothing.
+    const where = process.env.VERCEL_ENV || 'unknown';
+    return fail(res, 500,
+      `ANTHROPIC_API_KEY is not set for the "${where}" environment. ` +
+      'Open /api/debug-env on this same deployment to see what the server received.');
   }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
@@ -38,6 +56,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    const client = new Anthropic({ apiKey });
     // Streamed server-side so a long generation does not sit on an idle
     // connection; the browser still receives one JSON object.
     const stream = client.messages.stream({
