@@ -9,6 +9,12 @@ const ALLOWED_MODELS = new Set([
   'claude-haiku-5-5'
 ]);
 
+const ALLOWED_EFFORT = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
+
+// claude-sonnet-4-5 rejects output_config.effort, so it is only sent to models
+// that accept it rather than being assumed universal.
+const NO_EFFORT = new Set(['claude-sonnet-4-5']);
+
 const DEFAULT_MODEL = 'claude-sonnet-5-5';
 const MAX_TOKENS_CAP = 16000;
 
@@ -46,7 +52,7 @@ export default async function handler(req, res) {
   }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
-  const { system, messages, model, max_tokens } = body;
+  const { system, messages, model, max_tokens, effort } = body;
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return fail(res, 400, 'messages must be a non-empty array');
@@ -57,14 +63,21 @@ export default async function handler(req, res) {
 
   try {
     const client = new Anthropic({ apiKey });
-    // Streamed server-side so a long generation does not sit on an idle
-    // connection; the browser still receives one JSON object.
-    const stream = client.messages.stream({
-      model: model || DEFAULT_MODEL,
+    const chosen = model || DEFAULT_MODEL;
+    const request = {
+      model: chosen,
       max_tokens: Math.min(Number(max_tokens) || 12000, MAX_TOKENS_CAP),
       system,
       messages
-    });
+    };
+    // Effort controls how much reasoning the model spends. Weighing several
+    // evidence tiers against each other is the kind of work that repays it.
+    if (!NO_EFFORT.has(chosen)) {
+      request.output_config = { effort: ALLOWED_EFFORT.has(effort) ? effort : 'high' };
+    }
+    // Streamed server-side so a long generation does not sit on an idle
+    // connection; the browser still receives one JSON object.
+    const stream = client.messages.stream(request);
     const message = await stream.finalMessage();
 
     return res.status(200).json({

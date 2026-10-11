@@ -5,6 +5,12 @@
   "type": "module",
   "description": "Western blot predictor with an embedded literature database",
   "scripts": {
+    "build-aliases": "node scripts/build-aliases.mjs",
+    "eval:retrieval": "node eval/retrieval-eval.mjs",
+    "eval:holdout": "node eval/build-holdout.mjs",
+    "eval:run": "node eval/run-eval.mjs",
+    "eval:score": "node eval/score.mjs",
+    "eval:calibrate": "node eval/fit-calibration.mjs",
     "translate-db": "node scripts/translate-db.mjs"
   },
   "dependencies": {

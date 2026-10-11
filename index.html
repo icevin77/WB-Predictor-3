@@ -399,6 +399,9 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent); box-sha
   </div>
 </div>
 
+<script src="lib/normalize.js"></script>
+<script src="lib/prompt.js"></script>
+<script src="lib/calibration.js"></script>
 <script>
 'use strict';
 let currentMode = 'known';
@@ -8234,19 +8237,11 @@ SK-BR-3,,False,AZD4547,51039095.0,5.0,72.0,p-ERK1/2,,down,strong,,Fig. 2c,striki
 // Model used for the prediction call. The key itself lives on the server.
 var MODEL = 'claude-sonnet-5-5';
 
-// Evidence tiers, strongest first.
-var EV = {
-  dbDirect:  'DB direct data',
-  dbAnalog:  'DB analogous cell line',
-  direct:    'Direct literature',
-  similar:   'Similar-condition literature',
-  lincs:     'LINCS direct data',
-  indirect:  'Indirect literature inference',
-  mechanism: 'Mechanistic inference',
-  structure: 'Structural-analog inference',
-  none:      'No data',
-  control:   'Loading control'
-};
+// Evidence tiers and the system prompt come from lib/prompt.js, shared with
+// the evaluation scripts.
+var EV = globalThis.WB_PROMPT.EV;
+var buildSystemPrompt = globalThis.WB_PROMPT.buildSystemPrompt;
+
 var WEAK_EV = [EV.mechanism, EV.indirect, EV.structure, EV.none];
 
 // ── WB database (parsed from the embedded CSV above) ──
@@ -8311,9 +8306,12 @@ function loadWBDB() {
   }
 }
 
-function normStr(s) {
-  return (s || '').toLowerCase().replace(/[-_\s\/\(\)]/g, '').replace(/phospho|p-/g, 'p');
-}
+// Name matching lives in lib/normalize.js so the app and the evaluation
+// scripts resolve aliases the same way. Each field has its own table.
+var WBN = globalThis.WB_NORM;
+function normStr(s) { return WBN.norm(s, 'marker'); }
+function normCell(s) { return WBN.norm(s, 'cell'); }
+function normDrug(s) { return WBN.norm(s, 'drug'); }
 
 // ── Condition similarity (concentration and timepoint), 0..1 ──
 function parseNum(s) {
@@ -8350,35 +8348,30 @@ function condLabel(score) {
 function queryWBDB(drugName, cellLine, markers, inputConc, inputTime) {
   if (WB_DB_STATUS !== 'ready') return null;
 
-  var dNorm = normStr(drugName);
-  var cNorm = normStr(cellLine.split(' ')[0]);
+  var dNorm = normDrug(drugName);
+  var cellQuery = cellLine.split(' ')[0];
 
   // Same drug, same cell line.
   var exactRows = [];
   Object.keys(WB_DB_IDX).forEach(function(dk) {
-    if (normStr(dk) !== dNorm) return;
+    if (normDrug(dk) !== dNorm) return;
     var cellMap = WB_DB_IDX[dk];
     Object.keys(cellMap).forEach(function(ck) {
-      var cn = normStr(ck);
-      if (cn === cNorm || cn.indexOf(cNorm) >= 0 || cNorm.indexOf(cn) >= 0) {
-        exactRows = exactRows.concat(cellMap[ck]);
-      }
+      if (WBN.matches(ck, cellQuery, 'cell')) exactRows = exactRows.concat(cellMap[ck]);
     });
   });
 
   // Same drug, any other cell line.
   var drugOnlyRows = [];
   Object.keys(WB_DB_DRUG_IDX).forEach(function(dk) {
-    if (normStr(dk) === dNorm) drugOnlyRows = drugOnlyRows.concat(WB_DB_DRUG_IDX[dk]);
+    if (normDrug(dk) === dNorm) drugOnlyRows = drugOnlyRows.concat(WB_DB_DRUG_IDX[dk]);
   });
   var seenExact = new Set(exactRows.map(function(r){ return r.pmcid + r.cell + r.marker; }));
   drugOnlyRows = drugOnlyRows.filter(function(r){ return !seenExact.has(r.pmcid + r.cell + r.marker); });
 
   // Keep only the markers being analysed.
-  var mNorms = (markers || []).map(normStr);
   function markerMatch(row) {
-    var mn = normStr(row.marker);
-    return mNorms.some(function(m){ return mn === m || mn.indexOf(m) >= 0 || m.indexOf(mn) >= 0; });
+    return (markers || []).some(function(m){ return WBN.matches(row.marker, m, 'marker'); });
   }
   var exactFiltered = exactRows.filter(markerMatch);
   var drugFiltered = drugOnlyRows.filter(markerMatch);
@@ -8453,9 +8446,29 @@ function applyVoting(preds, dbResult, lincs) {
 
     p.confidence = Math.max(5, Math.min(97, (p.confidence || 0) + delta));
 
+    // Evidence actually behind this call, kept on the prediction so the
+    // calibration model can use it and so an eval run can record it.
+    var exactForMarker = (dbResult && dbResult.exact || []).filter(function(r){ return normStr(r.marker) === mn; });
+    var analogForMarker = (dbResult && dbResult.drugOnly || []).filter(function(r){ return normStr(r.marker) === mn; });
+    p.dbExact = exactForMarker.length;
+    p.dbAnalogous = analogForMarker.length;
+    p.condScore = condMap[mn] ? condMap[mn].score : null;
+    p.qualityMean = exactForMarker.length
+      ? exactForMarker.reduce(function(a, r){ return a + (parseInt(r.quality) || 50); }, 0) / exactForMarker.length
+      : null;
+
+    // With fitted weights this becomes the probability the direction is right;
+    // with the placeholder it returns the stated confidence unchanged.
+    var cal = globalThis.WB_CALIBRATION;
+    if (cal && cal.fitted) {
+      p.statedConfidence = p.confidence;
+      p.confidence = Math.max(1, Math.min(99, cal.calibrate(p)));
+    }
+
     var srcLabels = votes.map(function(v){ return v.src + ' ' + (DIR_GLYPH[v.dir] || '◆'); });
     var condNote = condMap[mn] ? ' | ' + condMap[mn].label + ' (' + Math.round(condMap[mn].score * 100) + '%)' : '';
-    p.voteNote = srcLabels.join(' / ') + (delta !== 0 ? (delta > 0 ? ' → +' : ' → ') + delta : '') + condNote;
+    var calNote = p.statedConfidence != null ? ' | calibrated from ' + p.statedConfidence : '';
+    p.voteNote = srcLabels.join(' / ') + (delta !== 0 ? (delta > 0 ? ' → +' : ' → ') + delta : '') + condNote + calNote;
   });
 
   return preds;
@@ -9184,101 +9197,6 @@ function renderTable(preds) {
   document.getElementById('tableOut').innerHTML = html;
 }
 
-function buildSystemPrompt() {
-  return [
-    'You are an expert in tumour biology, medicinal chemistry and cell signalling.',
-    'When predicting a western blot, always do both of the following.',
-    '',
-    '[0] WB Database direct experimental data - highest priority',
-    'If the corpus contains a "[WB Database - direct experiments in this cell line with this drug]" section:',
-    '1. Set that marker\'s direction straight from the database value, ahead of anything found by literature search.',
-    '2. evidenceLevel: "' + EV.dbDirect + '", confidence: the database quality value * 0.9 (minimum 70).',
-    '3. wb_data_found: "[WB DB] PMC{pmcid} | {cell} | {drug} {conc}uM {time}h -> {marker}: {direction}".',
-    '4. With several rows for one marker, prefer the higher quality value; if the directions agree, add 5 to confidence.',
-    '5. "[WB Database - same drug, other cell lines]" is supporting evidence only - adjust confidence by +5 to +10.',
-    '6. Always honour the condition note ("[conditions ...]"). "conditions differ" costs 10-15 confidence even for otherwise solid database evidence.',
-    '',
-    '[1] Extract western blot results from the literature',
-    'Find the sentence reporting the western blot result and record it in wb_data_found.',
-    'If there is none, use null. Never invent one.',
-    '',
-    '[2] Causal signalling chain - required for every marker',
-    'Cell line genetic background -> primary drug action -> pathway -> change in the marker.',
-    'Write this into the signaling_chain field.',
-    '',
-    '[Housekeeping gene rule - no exceptions]',
-    'For loading controls such as beta-actin, GAPDH and tubulin:',
-    '- direction: "none", intensity: "medium", confidence: 100',
-    '- evidenceLevel: "' + EV.control + '"',
-    '- wb_data_found: null, signaling_chain: "' + EV.control + '"',
-    '- Never attach an inference badge and never override these values.',
-    '',
-    '[Using LINCS L1000 data - supporting evidence only]',
-    'Consider LINCS only when it appears in the corpus; otherwise ignore it entirely.',
-    '1. If the marker gene is in the LINCS up list and agrees with the literature or mechanism, add 10 to confidence.',
-    '2. Never set a direction from LINCS alone - literature or mechanistic grounds are required.',
-    '3. LINCS measures mRNA, which can diverge from protein phosphorylation and degradation. Do not over-trust it.',
-    '',
-    '[Using cBioPortal data]',
-    'When target-gene mutation or expression data is supplied:',
-    '1. Fold the cell line mutation status into cell_line_analysis.',
-    '2. Gain-of-function mutations imply higher baseline expression.',
-    '3. Loss-of-function mutations imply lower baseline expression.',
-    '',
-    '[How to set confidence]',
-    'Confidence is the real probability that this marker moves in this direction.',
-    'Stronger evidence means higher confidence, weaker evidence lower - but a clear mechanism can score high with no paper behind it.',
-    'Example: an EGFR inhibitor reducing p-EGFR is mechanistic inference, yet can justifiably exceed 95.',
-    'Example: if the published dose or timepoint is far from the input, lower the confidence even with a solid paper.',
-    'Example: a marker unrelated to the drug\'s pathway stays low even when evidence exists.',
-    'Neither overconfidence nor underconfidence - accurate calibration is the goal.',
-    '',
-    '[Time-dependent predictions - required]',
-    'Marker patterns change completely with treatment duration. Always account for this.',
-    '',
-    'Early response (0-6h): phospho-marker activation (gammaH2AX, p-CHK1, p-p53), initial signal transduction.',
-    'Mid response (6-24h): transcription-driven protein changes begin (p21 up, Bcl-2 down), cleaved caspases start rising.',
-    'Late response (24-72h): apoptosis completes (cleaved Caspase-3 and cleaved PARP peak), survival markers fall.',
-    'Very late (72h+): total protein drops after cell death, and selection for survivors can reverse marker patterns.',
-    '',
-    'When a treatment time is supplied:',
-    '1. State which phase each marker is in at that timepoint.',
-    '2. For markers past their peak, note in wb_data_found that the direction may have reversed.',
-    '3. Lower doses stretch the timeline (0.1x IC50 extends it roughly 2-3 fold).',
-    '4. Note "at {N}h of treatment" in signaling_chain.',
-    '',
-    'Do not give up when no direct western blot paper exists:',
-    '1. Use UniProt function and pathway data to connect the marker to the drug\'s pathway.',
-    '2. Look for comparable situations in the indirect literature.',
-    '3. Build the logical chain and predict with confidence 20-40.',
-    '4. Use "' + EV.none + '" only when the protein has no connection at all to the drug\'s pathway.',
-    '',
-    '[Evidence priority]',
-    '0. WB Database, same cell line and drug -> evidenceLevel "' + EV.dbDirect + '", confidence 70-95',
-    '1. Cellosaurus or built-in deficiency -> direction "none", confidence 5 or below, no exceptions',
-    '2. Western blot paper, same cell line and drug -> evidenceLevel "' + EV.direct + '"',
-    '3. Western blot paper, similar conditions -> evidenceLevel "' + EV.similar + '"',
-    '4. WB Database, other cell lines -> evidenceLevel "' + EV.dbAnalog + '"',
-    '5. Indirect literature plus UniProt -> evidenceLevel "' + EV.indirect + '", confidence 25-45',
-    '6. UniProt plus signalling inference -> evidenceLevel "' + EV.mechanism + '", confidence 15-40',
-    '7. Nothing to go on -> evidenceLevel "' + EV.none + '", confidence 5 or below',
-    'LINCS and cBioPortal are adjustment material applied after this judgement, never the basis for it.',
-    '',
-    '[JSON output rules]',
-    '- No line breaks and no double quotes inside string values.',
-    '- Write the whole object on one line.',
-    '- No trailing commas.',
-    '',
-    '[Citations]',
-    'Never write an article identifier from memory. Cite a PMID or PMC id only if that exact',
-    'identifier appears in the corpus above. If you have no identifier from the corpus, describe',
-    'the finding without one. Identifiers that cannot be verified against the retrieved sources',
-    'are deleted before the result is displayed, so an invented one is wasted output.',
-    '',
-    'Return only this JSON:',
-    '{"pubchem_cid":null,"cellosaurus_ac":null,"cell_line_quirks_applied":[],"literature_found":0,"pmc_fulltext_count":0,"lincs_found":false,"cbioportal_gene":null,"db_exact_hits":0,"drug_analysis":"","cell_line_analysis":"","predictions":[{"marker":"","direction":"up","intensity":"medium","confidence":50,"evidenceLevel":"' + EV.mechanism + '","citations":[],"wb_data_found":null,"signaling_chain":"","mechanism":""}],"pathway_summary":"","debate":{"ai_a_claim":"","ai_b_attack":"","ai_a_counter":"","ai_b_final":"","consensus":""},"no_data_markers":[],"validation_suggestions":[]}'
-  ].join('\n');
-}
 
 // Pull the JSON object out of the reply and repair the two things the model
 // reliably gets wrong: raw newlines inside strings, and trailing commas.
@@ -9561,6 +9479,7 @@ async function runAnalysis() {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 12000,
+        effort: 'high',
         system: buildSystemPrompt(),
         messages: [{ role: 'user', content: msgContent }]
       })
