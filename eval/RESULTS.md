@@ -1,19 +1,48 @@
 # Measured results
 
-First measurement of this tool's accuracy. 2026-10-11, `claude-sonnet-5-5`,
-effort `high`, 240 holdout cases split by paper.
+Two runs. The second corrects a measured direction bias; everything else is
+identical. 2026-10-11 and 2026-10-28, `claude-sonnet-5-5`, effort `high`,
+240 holdout cases split by paper.
 
 `eval/data/` is gitignored, so this file is the record.
 
 ## Headline
 
-| | |
-|---|---|
-| Accuracy | **69.6%** (167/240) |
-| Majority baseline | 45.0% (always "down") |
-| Lift | **+24.6pt** |
-| Calibration error, as stated | 20.1pt |
-| Calibration error, after fitting | **3.9pt** (cross-validated) |
+| | before | after |
+|---|---|---|
+| Accuracy | 70.2% | **75.6%** |
+| Majority baseline | 45.0% | 45.0% |
+| Lift | +25.2pt | **+30.6pt** |
+| Calibration error, as stated | 20.1pt | 22.6pt |
+| Calibration error, after fitting | 3.9pt | **1.4pt** |
+
+Compared on the 238 cases both runs answered.
+
+## What the prompt change did
+
+The first run over-called "down" and under-called "up": of 75 markers that
+rose it named 42, and called 25 of them "unchanged". The prompt now names that
+bias, lists the marker classes that rise (cleavage products from near zero,
+damage and stress markers, phospho-epitopes whose kinase is activated), and
+says "none" is a prediction rather than a way to avoid choosing.
+
+| | before | after | |
+|---|---|---|---|
+| truth is up | 56.0% | **66.7%** | +10.7pt |
+| truth is down | 90.7% | **95.4%** | +4.6pt |
+| truth is unchanged | 49.1% | 49.1% | — |
+| exact DB row | 88.9% | 88.9% | — |
+| analogous rows only | 77.1% | **82.9%** | +5.7pt |
+| nothing in the DB | 66.0% | **71.7%** | +5.7pt |
+
+Calling a rise "unchanged" dropped from 25 to 16. Pushing toward "up" did not
+cost anything on "down", which was the risk — it improved there too.
+
+The gain lands where there is no database support, which is where the bias was
+doing the most damage. Pure mechanistic inference went 56.2% to 68.8%.
+
+**"Unchanged" did not move and is now the weak class at 49.1%.** It is the
+next thing to work on.
 
 Scope: database plus model. The external sources (PubChem, PMC, UniProt,
 LINCS, cBioPortal) are not called in the eval, so this is the floor the live
@@ -24,10 +53,8 @@ app builds on.
 | Evidence available | Cases | Accuracy |
 |---|---|---|
 | Exact row (same drug, cell line, marker) | 9 | **88.9%** |
-| Analogous only (same drug, other cell lines) | 70 | 77.1% |
-| Nothing in the database | 161 | 65.2% |
-
-The ordering is the design working. Getting here required a fix — see below.
+| Analogous only (same drug, other cell lines) | 70 | 82.9% |
+| Nothing in the database | 159 | 71.7% |
 
 ## What the first run exposed
 
@@ -52,30 +79,31 @@ database. Zero is not a treatment; those rows no longer count as gradeable.
 
 ## Where it is weak
 
-**Increases are under-called.** Of 77 true increases the model called 42
-correctly and 27 "unchanged". It is reluctant to commit to a rise.
+**"Unchanged" is now the weak class**, at 49.1%. Of 55 true no-change cases,
+20 were called "down". The increase bias is corrected; this one is not.
 
 ```
            predicted
 truth       up   down   none    total
-up          42      8     27       77
-down         1     98      9      108
-none         9     19     27       55
+up          50      9     16       75
+down         1    103      4      108
+none         8     20     27       55
 ```
 
-**Pure mechanistic inference is the weak tier** — 56.2% over 105 cases, which
-is the bulk of the set. Every tier backed by retrieved evidence beats it:
+**Pure mechanistic inference is still the weak tier**, though it moved most:
+56.2% to 68.8% over 109 cases, the bulk of the set.
 
 | Tier the model claimed | Cases | Accuracy |
 |---|---|---|
-| Similar-condition literature | 21 | 85.7% |
-| DB analogous cell line | 53 | 81.1% |
+| Similar-condition literature | 29 | 86.2% |
+| DB analogous cell line | 56 | 82.1% |
 | DB direct data | 5 | 80.0% |
-| Indirect literature inference | 53 | 75.5% |
-| Mechanistic inference | 105 | 56.2% |
+| Indirect literature inference | 36 | 75.0% |
+| Mechanistic inference | 109 | 68.8% |
 
-**Confidence was systematically too low.** Stated 25-49% was right 63% of the
-time. `lib/calibration.js` now corrects this, fitted on these results.
+**Confidence is systematically too low**, and more so after the prompt change:
+a stated 25-49% is right 74.7% of the time. `lib/calibration.js` corrects it,
+refitted on the second run — cross-validated error 1.4pt, Brier 0.185.
 
 ## The database has almost no redundancy
 
@@ -93,7 +121,7 @@ next thing to do, and it costs about $2.
 
 ## Cost
 
-About $11 for 20 + 250 + 240 predictions.
+About $16 for 20 + 250 + 240 + 240 predictions.
 
 ## Reproducing
 
